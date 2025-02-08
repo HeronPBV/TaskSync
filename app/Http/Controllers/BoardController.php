@@ -17,15 +17,6 @@ class BoardController extends Controller
         $this->boardService = $boardService;
     }
 
-    public function index()
-    {
-        $boards = $this->boardService->getBoardsForUser(auth()->user());
-
-        return Inertia::render('Boards/Index', [
-            'boards' => $boards,
-        ]);
-    }
-
     public function create()
     {
         return Inertia::render('Boards/Create');

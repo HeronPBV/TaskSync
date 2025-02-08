@@ -29,7 +29,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $boards = \App\Models\Board::where('user_id', auth()->id())->get();
+    return Inertia::render('Dashboard', ['boards' => $boards]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -42,7 +43,7 @@ require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
 
-    Route::resource('boards', BoardController::class);
+    Route::resource('boards', BoardController::class)->except('index');
     Route::resource('boards.columns', ColumnController::class)->shallow();
     Route::resource('columns.tasks', TaskController::class)->shallow();
 

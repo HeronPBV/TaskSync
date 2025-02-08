@@ -9,7 +9,11 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "lib": ["ESNext", "DOM"]
+        "lib": ["ESNext", "DOM"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"]
+        }
     },
-    "include": ["resources/js/**/*"]
+    "include": ["resources/js/**/*", "vite-env.d.ts", "shims-vue.d.ts"]
 }
