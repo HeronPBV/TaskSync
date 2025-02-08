@@ -47,4 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('boards.columns', ColumnController::class)->shallow();
     Route::resource('columns.tasks', TaskController::class)->shallow();
 
+    Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder')->middleware('auth');
+
+
+
+
 });

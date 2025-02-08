@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
+use Inertia\Inertia;
+use App\Models\Column;
+use Illuminate\Http\Request;
+use App\Services\TaskService;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Task;
-use App\Models\Column;
-use App\Services\TaskService;
-use Inertia\Inertia;
+use App\Http\Requests\UpdateTasksOrderRequest;
 
 class TaskController extends Controller
 {
@@ -73,4 +76,20 @@ class TaskController extends Controller
         return redirect()->route('boards.show', $task->column->board->id)
             ->with('success', 'Task deleted successfully.');
     }
+
+    public function reorder(UpdateTasksOrderRequest $request, Column $column): JsonResponse
+    {
+        $tasksData = $request->validated()['tasks'];
+
+        $success = $this->taskService->reorderTasks($column, $tasksData);
+
+        if ($success) {
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 500);
+    }
+
+
+
 }

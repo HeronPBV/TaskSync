@@ -1,21 +1,46 @@
 <template>
     <div
-        class="bg-white p-3 mb-3 rounded shadow hover:shadow-md transition duration-200 cursor-pointer"
+        class="bg-white min-w-[300px] p-4 mb-4 rounded shadow hover:shadow-md transition duration-200 cursor-pointer"
     >
-        <h4 class="font-semibold">{{ task.title }}</h4>
+        <h4 class="font-semibold text-lg">{{ task.title }}</h4>
         <p class="text-sm text-gray-600" v-if="task.description">
             {{ task.description }}
         </p>
+        <div class="mt-2 text-sm text-gray-500">
+            <span v-if="task.due_date" class="block">
+                <strong>Due:</strong> {{ formattedDueDate }}
+            </span>
+            <span v-if="task.priority" class="block">
+                <strong>Priority:</strong> {{ task.priority }}
+            </span>
+            <span v-if="task.position !== undefined" class="block">
+                <strong>Position:</strong> {{ task.position }}
+            </span>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 import type { Task } from "@/interfaces/Task/Task";
 
 const props = defineProps<{
     task: Task;
 }>();
+
+const formattedDueDate = computed(() => {
+    if (props.task.due_date) {
+        const date = new Date(props.task.due_date);
+        return date.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    }
+    return "";
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Você pode ajustar os valores conforme necessário */
+</style>
