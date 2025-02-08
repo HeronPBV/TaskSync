@@ -5,15 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBoardRequest;
 use App\Http\Requests\UpdateBoardRequest;
 use App\Models\Board;
-use Illuminate\Http\Request;
+use App\Services\BoardService;
 use Inertia\Inertia;
 
 class BoardController extends Controller
 {
+    protected BoardService $boardService;
+
+    public function __construct(BoardService $boardService)
+    {
+        $this->boardService = $boardService;
+    }
 
     public function index()
     {
-        $boards = Board::where('user_id', auth()->id())->get();
+        $boards = $this->boardService->getBoardsForUser(auth()->user());
 
         return Inertia::render('Boards/Index', [
             'boards' => $boards,
@@ -27,13 +33,9 @@ class BoardController extends Controller
 
     public function store(StoreBoardRequest $request)
     {
-        $board = Board::create([
-            'user_id' => auth()->id(),
-            'name' => $request->validated()['name'],
-            'description' => $request->validated()['description'] ?? null,
-        ]);
+        $board = $this->boardService->createBoard($request->validated(), auth()->user());
 
-        return redirect()->route('boards.show', $board->id)
+        return redirect()->route('boards.show', $board)
             ->with('success', 'Board created successfully.');
     }
 
@@ -46,7 +48,6 @@ class BoardController extends Controller
         ]);
     }
 
-
     public function edit(Board $board)
     {
         $this->authorize('update', $board);
@@ -56,12 +57,11 @@ class BoardController extends Controller
         ]);
     }
 
-
     public function update(UpdateBoardRequest $request, Board $board)
     {
-        $board->update($request->validated());
+        $this->boardService->updateBoard($board, $request->validated());
 
-        return redirect()->route('boards.show', $board->id)
+        return redirect()->route('boards.show', $board)
             ->with('success', 'Board updated successfully.');
     }
 
@@ -69,10 +69,9 @@ class BoardController extends Controller
     {
         $this->authorize('delete', $board);
 
-        $board->delete();
+        $this->boardService->deleteBoard($board);
 
         return redirect()->route('boards.index')
             ->with('success', 'Board deleted successfully.');
     }
-
 }
