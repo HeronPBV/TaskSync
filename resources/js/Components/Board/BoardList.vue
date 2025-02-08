@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 import { defineProps } from "vue";
 import BoardCard from "@/Components/Board/BoardCard.vue";
-import type { Board } from "@/interfaces/Board";
+import type { Board } from "@/interfaces/Board/Board";
 
 const props = defineProps<{
     boards: Board[];

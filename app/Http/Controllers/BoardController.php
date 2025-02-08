@@ -34,8 +34,10 @@ class BoardController extends Controller
     {
         $this->authorize('view', $board);
 
+        $boardWithDetails = $this->boardService->getBoardWithDetails($board);
+
         return Inertia::render('Boards/Show', [
-            'board' => $board,
+            'board' => $boardWithDetails,
         ]);
     }
 

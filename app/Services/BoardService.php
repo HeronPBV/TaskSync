@@ -54,4 +54,16 @@ class BoardService
     {
         return $board->delete();
     }
+
+    /**
+     * Retrieve a board with its associated columns and tasks loaded.
+     *
+     * @param Board $board
+     * @return Board
+     */
+    public function getBoardWithDetails(Board $board): Board
+    {
+        return $board->load('columns.tasks');
+    }
+
 }
