@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\Column;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TaskController extends Controller
 {
     public function index(Column $column)
     {
-        if ($column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $column);
 
         $tasks = $column->tasks()->get();
 
@@ -23,38 +22,20 @@ class TaskController extends Controller
         ]);
     }
 
+
     public function create(Column $column)
     {
-        if ($column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('create', [Task::class, $column]);
 
         return Inertia::render('Tasks/Create', [
             'column' => $column,
         ]);
     }
 
-    public function store(Request $request, Column $column)
+
+    public function store(StoreTaskRequest $request, Column $column)
     {
-        if ($column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'priority' => 'nullable|string',
-            'position' => 'nullable|integer',
-        ]);
-
-        $task = $column->tasks()->create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'due_date' => $request->due_date,
-            'priority' => $request->priority,
-            'position' => $request->position ?? 0,
-        ]);
+        $task = $column->tasks()->create($request->validated());
 
         return redirect()->route('boards.show', $column->board->id)
             ->with('success', 'Task created successfully.');
@@ -62,36 +43,16 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        if ($task->column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $task);
 
         return Inertia::render('Tasks/Edit', [
             'task' => $task,
         ]);
     }
 
-    public function update(Request $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        if ($task->column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            'priority' => 'nullable|string',
-            'position' => 'nullable|integer',
-        ]);
-
-        $task->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'due_date' => $request->due_date,
-            'priority' => $request->priority,
-            'position' => $request->position ?? $task->position,
-        ]);
+        $task->update($request->validated());
 
         return redirect()->route('boards.show', $task->column->board->id)
             ->with('success', 'Task updated successfully.');
@@ -99,10 +60,7 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        if ($task->column->board->user_id !== auth()->id()) {
-            abort(403);
-        }
-
+        $this->authorize('delete', $task);
         $task->delete();
 
         return redirect()->route('boards.show', $task->column->board->id)

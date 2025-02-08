@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBoardRequest;
+use App\Http\Requests\UpdateBoardRequest;
 use App\Models\Board;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,17 +25,12 @@ class BoardController extends Controller
         return Inertia::render('Boards/Create');
     }
 
-    public function store(Request $request)
+    public function store(StoreBoardRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
         $board = Board::create([
             'user_id' => auth()->id(),
-            'name' => $request->name,
-            'description' => $request->description,
+            'name' => $request->validated()['name'],
+            'description' => $request->validated()['description'] ?? null,
         ]);
 
         return redirect()->route('boards.show', $board->id)
@@ -42,41 +39,27 @@ class BoardController extends Controller
 
     public function show(Board $board)
     {
-        if ($board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $board);
 
         return Inertia::render('Boards/Show', [
             'board' => $board,
         ]);
     }
 
+
     public function edit(Board $board)
     {
-        if ($board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $board);
 
         return Inertia::render('Boards/Edit', [
             'board' => $board,
         ]);
     }
 
-    public function update(Request $request, Board $board)
+
+    public function update(UpdateBoardRequest $request, Board $board)
     {
-        if ($board->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        $board->update([
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
+        $board->update($request->validated());
 
         return redirect()->route('boards.show', $board->id)
             ->with('success', 'Board updated successfully.');
@@ -84,13 +67,12 @@ class BoardController extends Controller
 
     public function destroy(Board $board)
     {
-        if ($board->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $board);
 
         $board->delete();
 
         return redirect()->route('boards.index')
             ->with('success', 'Board deleted successfully.');
     }
+
 }
