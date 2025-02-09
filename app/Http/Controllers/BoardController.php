@@ -26,8 +26,8 @@ class BoardController extends Controller
     {
         $board = $this->boardService->createBoard($request->validated(), auth()->user());
 
-        return redirect()->route('boards.show', $board)
-            ->with('success', 'Board created successfully.');
+        return response()->json(['board' => $board]);
+
     }
 
     public function show(Board $board)
