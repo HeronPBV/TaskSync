@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
+import { Inertia } from "@inertiajs/inertia";
 import type { Column } from "@/interfaces/Column/Column";
 
 export const useColumnStore = defineStore("columnStore", {
@@ -27,6 +28,20 @@ export const useColumnStore = defineStore("columnStore", {
             } finally {
                 this.loading = false;
             }
+        },
+        deleteColumn(columnId: number) {
+            Inertia.delete(route("columns.destroy", { column: columnId }), {
+                preserveState: true,
+                onSuccess: () => {
+                    console.log("Column deleted successfully");
+                    this.columns = this.columns.filter(
+                        (col) => col.id !== columnId
+                    );
+                },
+                onError: (errors: any) => {
+                    console.error("Error deleting column:", errors);
+                },
+            });
         },
     },
 });

@@ -43,6 +43,7 @@ import TaskItem from "../Task/TaskItem.vue";
 import type { Column } from "@/interfaces/Column/Column";
 import type { Task } from "@/interfaces/Task/Task";
 import { useTaskStore } from "@/stores/Task/taskStore";
+import { useColumnStore } from "@/stores/Column/columnStore";
 import { Inertia } from "@inertiajs/inertia";
 import { route } from "ziggy-js";
 
@@ -85,21 +86,15 @@ const handleEnd = () => {
 
 const hasTasks = computed(() => localTasks.value.length > 0);
 
+const columnStore = useColumnStore();
+
 function deleteColumn() {
     if (
         confirm(
             "Are you sure you want to delete this column? This action cannot be undone."
         )
     ) {
-        Inertia.delete(route("columns.destroy", { column: props.column.id }), {
-            preserveState: true,
-            onSuccess: () => {
-                console.log("Column deleted successfully");
-            },
-            onError: (errors: any) => {
-                console.error("Error deleting column:", errors);
-            },
-        });
+        columnStore.deleteColumn(props.column.id);
     }
 }
 </script>
