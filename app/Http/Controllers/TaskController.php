@@ -46,6 +46,10 @@ class TaskController extends Controller
     {
         $task = $this->taskService->createTask($column, $request->validated());
 
+        if (request()->wantsJson()) {
+            return response()->json(['task' => $task]);
+        }
+
         return redirect()->route('boards.show', $column->board->id)
             ->with('success', 'Task created successfully.');
     }
@@ -71,11 +75,18 @@ class TaskController extends Controller
     {
         $this->authorize('delete', $task);
 
+        $boardId = $task->column->board->id;
+
         $this->taskService->deleteTask($task);
 
-        return redirect()->route('boards.show', $task->column->board->id)
+        if (request()->wantsJson()) {
+            return response()->json(['message' => 'Task deleted successfully.']);
+        }
+
+        return redirect()->route('boards.show', $boardId)
             ->with('success', 'Task deleted successfully.');
     }
+
 
     public function reorder(UpdateTasksOrderRequest $request, Column $column): JsonResponse
     {

@@ -1,9 +1,25 @@
 <template>
     <div class="min-w-[350px] bg-gray-100 p-4 rounded shadow">
-        <h3 class="text-lg font-bold mb-4">{{ column.name }}</h3>
+        <div class="flex justify-between">
+            <h3 class="text-lg font-bold mb-4">{{ column.name }}</h3>
+            <button
+                @click="addNewTask"
+                class="bg-green-300 text-green-600 p-2 rounded-full shadow w-6 h-6 hover:bg-green-400 flex justify-center items-center text-2xl"
+            >
+                +
+            </button>
+        </div>
 
         <div v-if="!hasTasks" class="text-gray-500 text-sm py-4 text-center">
             No tasks yet.
+        </div>
+
+        <div v-if="showAddTaskForm">
+            <TaskAddForm
+                :columnId="column.id"
+                @task-added="handleTaskAdded"
+                @cancel-add="closeAddTaskForm"
+            />
         </div>
 
         <draggable
@@ -15,7 +31,7 @@
             @end="handleEnd"
         >
             <template #item="{ element }">
-                <TaskItem :task="element" />
+                <TaskItem :task="element" @task-deleted="removeTask" />
             </template>
             <template #placeholder>
                 <div
@@ -25,6 +41,7 @@
                 </div>
             </template>
         </draggable>
+
         <div v-if="!hasTasks" class="mt-4">
             <button
                 @click="deleteColumn"
@@ -46,6 +63,7 @@ import { useTaskStore } from "@/stores/Task/taskStore";
 import { useColumnStore } from "@/stores/Column/columnStore";
 import { Inertia } from "@inertiajs/inertia";
 import { route } from "ziggy-js";
+import TaskAddForm from "../Task/TaskAddForm.vue";
 
 const props = defineProps<{
     column: Column;
@@ -61,6 +79,7 @@ watch(
 );
 
 const taskStore = useTaskStore();
+const columnStore = useColumnStore();
 
 const updateTasksOrderForColumn = () => {
     localTasks.value.forEach((task, index) => {
@@ -86,7 +105,30 @@ const handleEnd = () => {
 
 const hasTasks = computed(() => localTasks.value.length > 0);
 
-const columnStore = useColumnStore();
+const removeTask = (taskId: number) => {
+    localTasks.value = localTasks.value.filter((task) => task.id !== taskId);
+    updateTasksOrderForColumn();
+};
+
+const showAddTaskForm = ref(false);
+
+const openAddTaskForm = () => {
+    showAddTaskForm.value = true;
+};
+
+const closeAddTaskForm = () => {
+    showAddTaskForm.value = false;
+};
+
+const addNewTask = () => {
+    openAddTaskForm();
+};
+
+const handleTaskAdded = (newTask: Task) => {
+    localTasks.value.unshift(newTask);
+    updateTasksOrderForColumn();
+    showAddTaskForm.value = false;
+};
 
 function deleteColumn() {
     if (

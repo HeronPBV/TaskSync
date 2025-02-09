@@ -24,7 +24,40 @@ export const useTaskStore = defineStore("taskStore", {
                     tasks: tasksPayload,
                 });
             } catch (error) {
-                console.error("Error can't update tasks order:", error);
+                console.error("Error updating tasks order:", error);
+            }
+        },
+
+        async addTask({
+            columnId,
+            data,
+        }: {
+            columnId: number;
+            data: Partial<Task>;
+        }): Promise<Task> {
+            try {
+                const response = await axios.post(
+                    route("columns.tasks.store", { column: columnId }),
+                    {
+                        ...data,
+                        position: 1,
+                    }
+                );
+                return response.data.task;
+            } catch (error) {
+                console.error("Error adding task:", error);
+                throw error;
+            }
+        },
+
+        async deleteTask(taskId: number): Promise<void> {
+            try {
+                const url = route("tasks.destroy", { task: taskId });
+                console.log("Deleting task via URL:", url);
+                await axios.delete(url);
+            } catch (error) {
+                console.error("Error deleting task:", error);
+                throw error;
             }
         },
     },

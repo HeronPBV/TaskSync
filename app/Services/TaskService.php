@@ -31,8 +31,12 @@ class TaskService
      */
     public function createTask(Column $column, array $data): Task
     {
-        return $column->tasks()->create($data);
+        DB::transaction(function () use ($column) {
+            $column->tasks()->increment('position');
+        });
+        return $column->tasks()->create($data + ['position' => 1]);
     }
+
 
     /**
      * Update an existing task.
