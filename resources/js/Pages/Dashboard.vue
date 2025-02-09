@@ -28,7 +28,7 @@
                         @cancel-add="showForm = false"
                     />
 
-                    <BoardList :boards="localBoards" />
+                    <BoardList :boards="boards" />
                 </div>
             </div>
         </div>
@@ -36,25 +36,29 @@
 </template>
 
 <script lang="ts" setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import BoardList from "@/Components/Board/BoardList.vue";
 import BoardAddForm from "@/Components/Board/BoardAddForm.vue";
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useBoardStore } from "@/stores/Board/boardStore";
+import type { Board } from "@/interfaces/Board/Board";
 
 const props = defineProps<{
-    boards: Array<{ id: number; name: string; description?: string }>;
+    boards: Board[];
 }>();
 
-const localBoards = ref([...props.boards]);
+const boards = computed(() => boardStore.boards);
+
+const boardStore = useBoardStore();
+
 const showForm = ref(false);
 
-const handleBoardAdded = (newBoard: {
-    id: number;
-    name: string;
-    description?: string;
-}) => {
-    localBoards.value.push(newBoard);
+const handleBoardAdded = (newBoard: Board) => {
     showForm.value = false;
 };
+
+onMounted(() => {
+    boardStore.boards = [...props.boards];
+});
 </script>

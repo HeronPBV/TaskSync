@@ -64,7 +64,6 @@ class BoardController extends Controller
 
         $this->boardService->deleteBoard($board);
 
-        return redirect()->route('boards.index')
-            ->with('success', 'Board deleted successfully.');
+        return response()->json(['success' => 'Board deleted successfully.']);
     }
 }

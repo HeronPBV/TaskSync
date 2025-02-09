@@ -34,5 +34,20 @@ export const useBoardStore = defineStore("boardStore", {
                 this.loading = false;
             }
         },
+
+        async deleteBoard(boardId: number): Promise<void> {
+            this.loading = true;
+            this.error = null;
+            try {
+                await axios.delete(route("boards.destroy", { board: boardId }));
+                this.boards = this.boards.filter((b) => b.id !== boardId);
+            } catch (error: any) {
+                this.error = "Error deleting board.";
+                console.error(error);
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
     },
 });
