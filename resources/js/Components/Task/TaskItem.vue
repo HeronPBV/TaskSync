@@ -6,15 +6,14 @@
         <p class="text-sm text-gray-600" v-if="task.description">
             {{ task.description }}
         </p>
-        <div class="mt-2 text-sm text-gray-500">
+        <div
+            class="mt-2 text-sm text-gray-500 bg-blue-50 p-2 border-t border-t-gray"
+        >
             <span v-if="task.due_date" class="block">
                 <strong>Due:</strong> {{ formattedDueDate }}
             </span>
             <span v-if="task.priority" class="block">
                 <strong>Priority:</strong> {{ task.priority }}
-            </span>
-            <span v-if="task.position !== undefined" class="block">
-                <strong>Position:</strong> {{ task.position }}
             </span>
         </div>
     </div>
@@ -41,6 +40,4 @@ const formattedDueDate = computed(() => {
 });
 </script>
 
-<style scoped>
-/* Você pode ajustar os valores conforme necessário */
-</style>
+<style scoped></style>

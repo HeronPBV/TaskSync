@@ -43,6 +43,10 @@ class ColumnController extends Controller
     {
         $column = $this->columnService->createColumn($board, $request->validated());
 
+        if ($request->wantsJson()) {
+            return response()->json(['column' => $column]);
+        }
+
         return redirect()->route('boards.show', $board->id)
             ->with('success', 'Column created successfully.');
     }

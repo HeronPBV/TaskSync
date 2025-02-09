@@ -24,7 +24,7 @@ export const useTaskStore = defineStore("taskStore", {
                     tasks: tasksPayload,
                 });
             } catch (error) {
-                console.error("Erro ao atualizar a ordem das tasks:", error);
+                console.error("Error can't update tasks order:", error);
             }
         },
     },

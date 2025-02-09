@@ -13,9 +13,11 @@
         >
             {{ board.description }}
         </p>
-
+        <p class="text-gray-500 text-xs italic mx-auto mb-2 w-fit">
+            You can drag and drop the task cards.
+        </p>
         <div class="mx-auto sm:px-6 lg:px-8 py-6 bg-blue-300">
-            <ColumnsList :columns="board.columns" />
+            <ColumnsList :columns="board.columns" :boardId="board.id" />
         </div>
     </AuthenticatedLayout>
 </template>
@@ -32,5 +34,3 @@ const props = defineProps<{
 }>();
 const title = "Board " + props.board.id;
 </script>
-
-<style scoped></style>

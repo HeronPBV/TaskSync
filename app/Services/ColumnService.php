@@ -20,7 +20,7 @@ class ColumnService
     }
 
     /**
-     * Create a new column under a specific board.
+     * Create a new column for the given board.
      *
      * @param Board $board
      * @param array $data
@@ -28,7 +28,13 @@ class ColumnService
      */
     public function createColumn(Board $board, array $data): Column
     {
-        return $board->columns()->create($data);
+        $lastPosition = $board->columns()->max('position');
+
+        $data['position'] = is_null($lastPosition) ? 1 : $lastPosition + 1;
+
+        $data['board_id'] = $board->id;
+
+        return Column::create($data);
     }
 
     /**
