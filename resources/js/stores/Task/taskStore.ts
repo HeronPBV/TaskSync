@@ -1,3 +1,4 @@
+// resources/js/stores/Task/taskStore.ts
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
@@ -134,6 +135,37 @@ export const useTaskStore = defineStore("taskStore", {
                 }
             } catch (error) {
                 console.error("Error deleting task:", error);
+                throw error;
+            }
+        },
+
+        /**
+         * Updates an existing task.
+         *
+         * Sends a PATCH request with the updated task data and updates the task in the store.
+         *
+         * @param task - The task to update.
+         * @param data - Partial task data with the updates (e.g., title, description, due_date, priority).
+         * @returns A Promise that resolves with the updated task.
+         *
+         * @example
+         * const updatedTask = await taskStore.updateTask(task, { title: "New Title" });
+         */
+        async updateTask(task: Task, data: Partial<Task>): Promise<Task> {
+            try {
+                const response = await axios.patch(
+                    route("tasks.update", { task: task.id }),
+                    data
+                );
+                const updatedTask = response.data.task as Task;
+                if (this.tasksByColumn[task.column_id]) {
+                    this.tasksByColumn[task.column_id] = this.tasksByColumn[
+                        task.column_id
+                    ].map((t) => (t.id === task.id ? updatedTask : t));
+                }
+                return updatedTask;
+            } catch (error) {
+                console.error("Error updating task:", error);
                 throw error;
             }
         },

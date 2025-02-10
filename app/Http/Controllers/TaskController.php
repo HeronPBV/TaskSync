@@ -67,8 +67,7 @@ class TaskController extends Controller
     {
         $this->taskService->updateTask($task, $request->validated());
 
-        return redirect()->route('boards.show', $task->column->board->id)
-            ->with('success', 'Task updated successfully.');
+        return response()->json(['task' => $task]);
     }
 
     public function destroy(Task $task)
