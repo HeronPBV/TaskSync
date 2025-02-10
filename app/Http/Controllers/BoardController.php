@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreBoardRequest;
-use App\Http\Requests\UpdateBoardRequest;
+use Inertia\Inertia;
 use App\Models\Board;
 use App\Services\BoardService;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Http;
+use App\Http\Requests\StoreBoardRequest;
+use App\Http\Requests\UpdateBoardRequest;
 
 class BoardController extends Controller
 {
@@ -53,6 +54,10 @@ class BoardController extends Controller
     public function update(UpdateBoardRequest $request, Board $board)
     {
         $this->boardService->updateBoard($board, $request->validated());
+
+        Http::post(env('SOCKET_SERVER_URL') . '/broadcast/board-updated', [
+            'board' => $board,
+        ]);
 
         return response()->json([
             'board' => $board,

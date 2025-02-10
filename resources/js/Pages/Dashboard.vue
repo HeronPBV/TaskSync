@@ -13,7 +13,7 @@
                     class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6"
                 >
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-2xl font-semibold">Your Boards</h2>
+                        <h2 class="text-2xl font-semibold">All Boards</h2>
                         <button
                             @click="showForm = true"
                             class="bg-green-300 text-green-600 px-4 py-2 rounded hover:bg-green-400 font-bold"

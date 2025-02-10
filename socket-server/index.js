@@ -1,0 +1,37 @@
+const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(bodyParser.json());
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: "*",
+    },
+});
+
+io.on("connection", (socket) => {
+    console.log("New client connected:", socket.id);
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected:", socket.id);
+    });
+});
+
+app.post("/broadcast/board-updated", (req, res) => {
+    const board = req.body.board;
+    console.log("Broadcasting board update:", board);
+    io.emit("boardUpdated", { board });
+    res.status(200).json({ message: "Event broadcasted successfully" });
+});
+
+const PORT = process.env.PORT || 6001;
+server.listen(PORT, () => {
+    console.log(`Socket.IO server running on port ${PORT}`);
+});

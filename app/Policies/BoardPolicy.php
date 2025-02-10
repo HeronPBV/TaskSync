@@ -10,7 +10,8 @@ class BoardPolicy
 {
     public function view(User $user, Board $board): bool
     {
-        return $user->id === $board->user_id;
+        // All users can see all boards, just to simplify demonstrate realtime updates
+        return true;
     }
 
     public function create(User $user): bool
@@ -21,7 +22,7 @@ class BoardPolicy
 
     public function update(User $user, Board $board): bool
     {
-        return $user->id === $board->user_id;
+        return true;
     }
 
     public function delete(User $user, Board $board): bool

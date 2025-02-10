@@ -74,7 +74,6 @@ export const useBoardStore = defineStore("boardStore", {
                     data
                 );
                 const updatedBoard = response.data.board as Board;
-                // Replace the board in the store
                 this.boards = this.boards.map((b) =>
                     b.id === boardId ? updatedBoard : b
                 );

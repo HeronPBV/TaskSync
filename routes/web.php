@@ -1,6 +1,7 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\Board;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\TaskController;
@@ -29,7 +30,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $boards = \App\Models\Board::where('user_id', auth()->id())->get();
+    $boards = Board::select()->get();
     return Inertia::render('Dashboard', ['boards' => $boards]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 

@@ -4,10 +4,32 @@
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-import axios from 'axios';
-window.axios = axios;
+import axios from "axios";
+import { useBoardStore } from "@/stores/Board/boardStore";
+import { io } from "socket.io-client";
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios = axios;
+window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+const socketServerUrl =
+    import.meta.env.VITE_SOCKET_SERVER_URL || "http://localhost:6001";
+
+const socket = io(socketServerUrl, { transports: ["websocket"] });
+
+socket.on("connect", () => {
+    console.log("Connected to Socket.IO server:", socket.id);
+});
+
+socket.on("boardUpdated", (data) => {
+    console.log("Board updated event received:", data.board);
+
+    const boardStore = useBoardStore();
+    const existingBoard = boardStore.boards.find((b) => b.id === data.board.id);
+
+    if (existingBoard && existingBoard.name !== data.board.name) {
+        boardStore.updateBoard(data.board.id, data.board);
+    }
+});
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
