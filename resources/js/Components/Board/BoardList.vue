@@ -1,4 +1,7 @@
 <template>
+    <p class="text-gray-500 text-xs italic mx-auto mb-2 w-fit">
+        Double click in a card to update board data
+    </p>
     <div
         v-if="boards.length"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"

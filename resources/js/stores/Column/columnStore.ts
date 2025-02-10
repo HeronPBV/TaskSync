@@ -1,3 +1,4 @@
+// resources/js/Stores/Column/columnStore.ts
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
@@ -48,6 +49,43 @@ export const useColumnStore = defineStore("columnStore", {
             } catch (error) {
                 this.error = "Error adding column";
                 console.error("Error adding column:", error);
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        /**
+         * Updates an existing column.
+         *
+         * Sends a PATCH request with the updated data and updates the column in the store.
+         *
+         * @param columnId - The ID of the column to update.
+         * @param data - An object containing the updated column data (e.g., name).
+         * @returns A Promise that resolves with the updated Column.
+         *
+         * @example
+         * const updatedColumn = await columnStore.updateColumn(1, { name: "Updated Name" });
+         */
+        async updateColumn(
+            columnId: number,
+            data: { name: string; description?: string }
+        ): Promise<Column> {
+            this.loading = true;
+            this.error = null;
+            try {
+                const response = await axios.patch(
+                    route("columns.update", { column: columnId }),
+                    data
+                );
+                const updatedColumn = response.data.column as Column;
+                this.columns = this.columns.map((col) =>
+                    col.id === columnId ? updatedColumn : col
+                );
+                return updatedColumn;
+            } catch (error: any) {
+                this.error = "Error updating column.";
+                console.error("Error updating column:", error);
                 throw error;
             } finally {
                 this.loading = false;

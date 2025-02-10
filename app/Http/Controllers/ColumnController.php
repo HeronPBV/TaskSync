@@ -58,10 +58,9 @@ class ColumnController extends Controller
     public function update(UpdateColumnRequest $request, Column $column)
     {
         $this->columnService->updateColumn($column, $request->validated());
-
-        return redirect()->route('boards.show', $column->board->id)
-            ->with('success', 'Column updated successfully.');
+        return response()->json(['column' => $column]);
     }
+
 
     public function destroy(Column $column)
     {

@@ -14,7 +14,8 @@
             {{ board.description }}
         </p>
         <p class="text-gray-500 text-xs italic mx-auto mb-2 w-fit">
-            You can drag and drop the task cards.
+            You can drag and drop the task cards and double click on any item to
+            edit.
         </p>
         <div class="mx-auto sm:px-6 lg:px-8 py-6 bg-blue-300">
             <ColumnsList :boardId="board.id" />

@@ -1,7 +1,26 @@
 <template>
     <div class="min-w-[350px] bg-gray-100 p-4 rounded shadow">
-        <div class="flex justify-between">
-            <h3 class="text-lg font-bold mb-4">{{ column.name }}</h3>
+        <div class="flex justify-between items-center">
+            <div class="flex-1">
+                <template v-if="isEditing">
+                    <input
+                        v-model="editedName"
+                        @keyup.enter="saveEdit"
+                        @blur="saveEdit"
+                        type="text"
+                        class="w-11/12 p-2 border rounded"
+                        autofocus
+                    />
+                </template>
+                <template v-else>
+                    <h3
+                        class="text-lg font-bold mb-4 cursor-pointer"
+                        @dblclick="startEditing"
+                    >
+                        {{ column.name }}
+                    </h3>
+                </template>
+            </div>
             <button
                 @click="openAddTaskForm"
                 class="bg-green-300 text-green-600 p-2 rounded-full shadow w-6 h-6 hover:bg-green-400 flex justify-center items-center text-2xl"
@@ -64,9 +83,9 @@ import type { Task } from "@/interfaces/Task/Task";
 import { useTaskStore } from "@/stores/Task/taskStore";
 import { useColumnStore } from "@/stores/Column/columnStore";
 import debounce from "lodash.debounce";
+import { route } from "ziggy-js";
 
 const props = defineProps<{ column: Column }>();
-
 const columnId = props.column.id;
 
 const taskStore = useTaskStore();
@@ -90,16 +109,11 @@ const tasks = computed<Task[]>({
 
 const updateTasksOrderForColumn = () => {
     if (tasks.value.length === 0) return;
-
     tasks.value.forEach((task, index) => {
         task.position = index + 1;
         task.column_id = columnId;
     });
-
-    taskStore.updateTasksOrder({
-        columnId,
-        tasks: tasks.value,
-    });
+    taskStore.updateTasksOrder({ columnId, tasks: tasks.value });
 };
 
 const debouncedUpdateTasksOrder = debounce(updateTasksOrderForColumn, 300);
@@ -131,6 +145,30 @@ const closeAddTaskForm = () => {
 
 const handleTaskAdded = (newTask: Task) => {
     closeAddTaskForm();
+};
+
+const isEditing = ref(false);
+const editedName = ref(props.column.name);
+
+const startEditing = () => {
+    isEditing.value = true;
+    editedName.value = props.column.name;
+};
+
+const saveEdit = async () => {
+    if (
+        editedName.value.trim() === "" ||
+        editedName.value === props.column.name
+    ) {
+        isEditing.value = false;
+        return;
+    }
+    try {
+        await columnStore.updateColumn(columnId, { name: editedName.value });
+        isEditing.value = false;
+    } catch (error) {
+        console.error("Error updating column name:", error);
+    }
 };
 
 const deleteColumn = () => {
