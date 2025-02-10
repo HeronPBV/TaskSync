@@ -59,7 +59,6 @@ import { useTaskStore } from "@/stores/Task/taskStore";
 import type { Task } from "@/interfaces/Task/Task";
 
 const props = defineProps<{ columnId: number }>();
-
 const emit = defineEmits<{
     (e: "task-added", newTask: Task): void;
     (e: "cancel-add"): void;
@@ -71,7 +70,6 @@ const form = ref({
     due_date: "",
     priority: "",
 });
-
 const loading = ref(false);
 const error = ref<string | null>(null);
 const titleInput = ref<HTMLInputElement | null>(null);

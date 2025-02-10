@@ -3,7 +3,7 @@
         <div class="flex justify-between">
             <h3 class="text-lg font-bold mb-4">{{ column.name }}</h3>
             <button
-                @click="addNewTask"
+                @click="openAddTaskForm"
                 class="bg-green-300 text-green-600 p-2 rounded-full shadow w-6 h-6 hover:bg-green-400 flex justify-center items-center text-2xl"
             >
                 +
@@ -16,14 +16,15 @@
 
         <div v-if="showAddTaskForm">
             <TaskAddForm
-                :columnId="column.id"
+                :columnId="columnId"
                 @task-added="handleTaskAdded"
                 @cancel-add="closeAddTaskForm"
             />
         </div>
 
         <draggable
-            v-model="localTasks"
+            v-model="tasks"
+            :item-key="'id'"
             group="tasks"
             class="flex flex-col space-y-4 min-h-[150px] border-b border-dashed border-gray-300 p-2"
             :animation="200"
@@ -54,89 +55,91 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, watch, computed } from "vue";
+import { defineProps, ref, computed, onMounted } from "vue";
 import draggable from "vuedraggable";
 import TaskItem from "../Task/TaskItem.vue";
+import TaskAddForm from "../Task/TaskAddForm.vue";
 import type { Column } from "@/interfaces/Column/Column";
 import type { Task } from "@/interfaces/Task/Task";
 import { useTaskStore } from "@/stores/Task/taskStore";
 import { useColumnStore } from "@/stores/Column/columnStore";
-import { Inertia } from "@inertiajs/inertia";
-import { route } from "ziggy-js";
-import TaskAddForm from "../Task/TaskAddForm.vue";
+import debounce from "lodash.debounce";
 
-const props = defineProps<{
-    column: Column;
-}>();
+const props = defineProps<{ column: Column }>();
 
-const localTasks = ref<Task[]>([...(props.column.tasks ?? [])]);
-
-watch(
-    () => props.column.tasks,
-    (newTasks) => {
-        localTasks.value = [...(newTasks ?? [])];
-    }
-);
+const columnId = props.column.id;
 
 const taskStore = useTaskStore();
 const columnStore = useColumnStore();
 
+onMounted(() => {
+    if (!taskStore.tasksByColumn[columnId]) {
+        taskStore.setTasksForColumn(columnId, props.column.tasks ?? []);
+    }
+});
+
+const tasks = computed<Task[]>({
+    get() {
+        return taskStore.tasksByColumn[columnId] || [];
+    },
+    set(newTasks) {
+        taskStore.tasksByColumn[columnId] = newTasks;
+        debouncedUpdateTasksOrder();
+    },
+});
+
 const updateTasksOrderForColumn = () => {
-    localTasks.value.forEach((task, index) => {
+    if (tasks.value.length === 0) return;
+
+    tasks.value.forEach((task, index) => {
         task.position = index + 1;
-        task.column_id = props.column.id;
+        task.column_id = columnId;
     });
+
     taskStore.updateTasksOrder({
-        columnId: props.column.id,
-        tasks: localTasks.value,
+        columnId,
+        tasks: tasks.value,
     });
 };
+
+const debouncedUpdateTasksOrder = debounce(updateTasksOrderForColumn, 300);
 
 const handleChange = (evt: any) => {
     if (evt.added) {
-        evt.added.element.column_id = props.column.id;
+        evt.added.element.column_id = columnId;
     }
-    updateTasksOrderForColumn();
+    debouncedUpdateTasksOrder();
 };
 
 const handleEnd = () => {
-    updateTasksOrderForColumn();
+    debouncedUpdateTasksOrder();
 };
 
-const hasTasks = computed(() => localTasks.value.length > 0);
+const hasTasks = computed(() => tasks.value.length > 0);
 
 const removeTask = (taskId: number) => {
-    localTasks.value = localTasks.value.filter((task) => task.id !== taskId);
-    updateTasksOrderForColumn();
+    tasks.value = tasks.value.filter((task) => task.id !== taskId);
 };
 
 const showAddTaskForm = ref(false);
-
 const openAddTaskForm = () => {
     showAddTaskForm.value = true;
 };
-
 const closeAddTaskForm = () => {
     showAddTaskForm.value = false;
 };
 
-const addNewTask = () => {
-    openAddTaskForm();
-};
-
 const handleTaskAdded = (newTask: Task) => {
-    localTasks.value.unshift(newTask);
-    updateTasksOrderForColumn();
-    showAddTaskForm.value = false;
+    closeAddTaskForm();
 };
 
-function deleteColumn() {
+const deleteColumn = () => {
     if (
         confirm(
             "Are you sure you want to delete this column? This action cannot be undone."
         )
     ) {
-        columnStore.deleteColumn(props.column.id);
+        columnStore.deleteColumn(columnId);
     }
-}
+};
 </script>

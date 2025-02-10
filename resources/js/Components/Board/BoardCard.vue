@@ -18,7 +18,7 @@
         <div class="mt-auto pt-4">
             <Link
                 :href="route('boards.show', board.id)"
-                class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 cursor-pointer"
+                class="inline-block bg-blue-300 hover:bg-blue-400 text-blue-600 font-bold py-2 px-4 rounded transition duration-200 cursor-pointer shadow"
             >
                 Open Board
             </Link>

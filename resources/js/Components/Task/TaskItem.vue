@@ -32,15 +32,8 @@ import { defineProps, computed, defineEmits } from "vue";
 import type { Task } from "@/interfaces/Task/Task";
 import { useTaskStore } from "@/stores/Task/taskStore";
 
-const props = defineProps<{
-    task: Task;
-}>();
-
-const emit = defineEmits<{
-    (e: "task-deleted", taskId: number): void;
-}>();
-
-const taskStore = useTaskStore();
+const props = defineProps<{ task: Task }>();
+const emit = defineEmits<{ (e: "task-deleted", taskId: number): void }>();
 
 const formattedDueDate = computed(() => {
     if (props.task.due_date) {
@@ -61,7 +54,10 @@ const handleDelete = async () => {
         )
     ) {
         try {
-            await taskStore.deleteTask(props.task.id);
+            await useTaskStore().deleteTask({
+                columnId: props.task.column_id,
+                taskId: props.task.id,
+            });
             emit("task-deleted", props.task.id);
         } catch (error) {
             console.error("Error deleting task:", error);

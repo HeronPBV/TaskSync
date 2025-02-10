@@ -24,7 +24,6 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { route } from "ziggy-js";
 import { useColumnStore } from "@/stores/Column/columnStore";
 const emit = defineEmits<{ (e: "column-added", newColumn: any): void }>();
 const props = defineProps<{ boardId: number }>();

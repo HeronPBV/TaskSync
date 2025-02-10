@@ -43,12 +43,7 @@ class ColumnController extends Controller
     {
         $column = $this->columnService->createColumn($board, $request->validated());
 
-        if ($request->wantsJson()) {
-            return response()->json(['column' => $column]);
-        }
-
-        return redirect()->route('boards.show', $board->id)
-            ->with('success', 'Column created successfully.');
+        return response()->json(['column' => $column]);
     }
 
     public function edit(Column $column)
@@ -74,7 +69,6 @@ class ColumnController extends Controller
 
         $this->columnService->deleteColumn($column);
 
-        return redirect()->route('boards.show', $column->board->id)
-            ->with('success', 'Column deleted successfully.');
+        return response()->json(['success' => 'Column deleted successfully.']);
     }
 }
