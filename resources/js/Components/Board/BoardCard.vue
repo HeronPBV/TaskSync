@@ -1,6 +1,7 @@
 <template>
     <div
         class="relative flex flex-col h-full border rounded-lg p-6 shadow hover:shadow-xl transition duration-200"
+        @dblclick="toggleEdit"
     >
         <button
             @click="handleDelete"
@@ -9,33 +10,53 @@
         >
             &times;
         </button>
-        <div>
-            <h2 class="text-xl font-semibold mb-2">{{ board.name }}</h2>
-            <p class="text-gray-600" v-if="board.description">
-                {{ board.description }}
-            </p>
+
+        <div v-if="isEditing">
+            <BoardEditForm
+                :board="board"
+                @board-updated="handleBoardUpdated"
+                @cancel-edit="toggleEdit"
+            />
         </div>
-        <div class="mt-auto pt-4">
-            <Link
-                :href="route('boards.show', board.id)"
-                class="inline-block bg-blue-300 hover:bg-blue-400 text-blue-600 font-bold py-2 px-4 rounded transition duration-200 cursor-pointer shadow"
-            >
-                Open Board
-            </Link>
+        <div v-else>
+            <div>
+                <h2 class="text-xl font-semibold mb-2">{{ board.name }}</h2>
+                <p class="text-gray-600" v-if="board.description">
+                    {{ board.description }}
+                </p>
+            </div>
+            <div class="mt-auto pt-4">
+                <Link
+                    :href="route('boards.show', board.id)"
+                    class="inline-block bg-blue-300 hover:bg-blue-400 text-blue-600 font-bold py-2 px-4 rounded transition duration-200 cursor-pointer shadow"
+                >
+                    Open Board
+                </Link>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import { route } from "ziggy-js";
 import { Link } from "@inertiajs/vue3";
 import { useBoardStore } from "@/stores/Board/boardStore";
 import type { Board } from "@/interfaces/Board/Board";
+import BoardEditForm from "@/Components/Board/BoardEditForm.vue";
 
 const props = defineProps<{ board: Board }>();
 
 const boardStore = useBoardStore();
+const isEditing = ref(false);
+
+const toggleEdit = () => {
+    isEditing.value = !isEditing.value;
+};
+
+const handleBoardUpdated = (updatedBoard: Board) => {
+    isEditing.value = false;
+};
 
 const handleDelete = async () => {
     if (

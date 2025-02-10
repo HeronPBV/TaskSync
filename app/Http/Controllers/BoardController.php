@@ -54,9 +54,13 @@ class BoardController extends Controller
     {
         $this->boardService->updateBoard($board, $request->validated());
 
-        return redirect()->route('boards.show', $board)
-            ->with('success', 'Board updated successfully.');
+        return response()->json([
+            'board' => $board,
+            'success' => true,
+        ]);
+
     }
+
 
     public function destroy(Board $board)
     {
