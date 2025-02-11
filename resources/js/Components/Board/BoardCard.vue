@@ -4,7 +4,7 @@
         @dblclick="toggleEdit"
     >
         <button
-            v-if="canDelete"
+            v-if="canInteract"
             @click="handleDelete"
             class="absolute -top-1 -left-1 bg-red-300 text-red-600 p-2 rounded-full shadow w-5 h-5 hover:bg-red-400 flex justify-center items-center text-xl"
             title="Delete Board"
@@ -12,7 +12,7 @@
             &times;
         </button>
 
-        <div v-if="isEditing">
+        <div v-if="isEditing && canInteract">
             <BoardEditForm
                 :board="board"
                 @board-updated="handleBoardUpdated"
@@ -30,6 +30,7 @@
                 <Link
                     :href="route('boards.show', board.id)"
                     class="inline-block bg-blue-300 hover:bg-blue-400 text-blue-600 font-bold py-2 px-4 rounded transition duration-200 cursor-pointer shadow"
+                    v-if="canInteract"
                 >
                     Open Board
                 </Link>
@@ -55,14 +56,16 @@ const userStore = useUserStore();
 const isEditing = ref(false);
 
 const toggleEdit = () => {
-    isEditing.value = !isEditing.value;
+    if (canInteract) {
+        isEditing.value = !isEditing.value;
+    }
 };
 
 const handleBoardUpdated = (updatedBoard: Board) => {
     isEditing.value = false;
 };
 
-const canDelete = computed(() => {
+const canInteract = computed(() => {
     return (
         userStore.user &&
         props.board.user_id &&

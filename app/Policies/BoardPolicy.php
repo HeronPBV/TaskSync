@@ -22,7 +22,7 @@ class BoardPolicy
 
     public function update(User $user, Board $board): bool
     {
-        return true;
+        return $user->id === $board->user_id;
     }
 
     public function delete(User $user, Board $board): bool
