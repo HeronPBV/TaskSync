@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ServiceException;
 use App\Models\User;
 use App\Models\Board;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,11 +26,16 @@ class BoardService
      * @param array $data
      * @param User $user
      * @return Board
+     * @throws ServiceException
      */
     public function createBoard(array $data, $user): Board
     {
         $data['user_id'] = $user->id;
-        return Board::create($data);
+        $board = Board::create($data);
+        if (!$board) {
+            throw new ServiceException("Board creation failed.");
+        }
+        return $board;
     }
 
     /**
@@ -38,10 +44,15 @@ class BoardService
      * @param Board $board
      * @param array $data
      * @return bool
+     * @throws ServiceException
      */
     public function updateBoard(Board $board, array $data): bool
     {
-        return $board->update($data);
+        $result = $board->update($data);
+        if (!$result) {
+            throw new ServiceException("Board update failed.");
+        }
+        return $result;
     }
 
     /**
@@ -49,10 +60,15 @@ class BoardService
      *
      * @param Board $board
      * @return bool|null
+     * @throws ServiceException
      */
-    public function deleteBoard(Board $board): bool|null
+    public function deleteBoard(Board $board): ?bool
     {
-        return $board->delete();
+        $result = $board->delete();
+        if (!$result) {
+            throw new ServiceException("Board deletion failed.");
+        }
+        return $result;
     }
 
     /**
@@ -65,5 +81,4 @@ class BoardService
     {
         return $board->load('columns.tasks');
     }
-
 }

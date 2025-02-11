@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ServiceException;
 use App\Models\Board;
 use App\Models\Column;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,16 +26,18 @@ class ColumnService
      * @param Board $board
      * @param array $data
      * @return Column
+     * @throws ServiceException
      */
     public function createColumn(Board $board, array $data): Column
     {
         $lastPosition = $board->columns()->max('position');
-
         $data['position'] = is_null($lastPosition) ? 1 : $lastPosition + 1;
-
         $data['board_id'] = $board->id;
-
-        return Column::create($data);
+        $column = Column::create($data);
+        if (!$column) {
+            throw new ServiceException("Column creation failed.");
+        }
+        return $column;
     }
 
     /**
@@ -43,10 +46,15 @@ class ColumnService
      * @param Column $column
      * @param array $data
      * @return bool
+     * @throws ServiceException
      */
     public function updateColumn(Column $column, array $data): bool
     {
-        return $column->update($data);
+        $result = $column->update($data);
+        if (!$result) {
+            throw new ServiceException("Column update failed.");
+        }
+        return $result;
     }
 
     /**
@@ -54,9 +62,14 @@ class ColumnService
      *
      * @param Column $column
      * @return bool|null
+     * @throws ServiceException
      */
-    public function deleteColumn(Column $column): bool|null
+    public function deleteColumn(Column $column): ?bool
     {
-        return $column->delete();
+        $result = $column->delete();
+        if (!$result) {
+            throw new ServiceException("Column deletion failed.");
+        }
+        return $result;
     }
 }

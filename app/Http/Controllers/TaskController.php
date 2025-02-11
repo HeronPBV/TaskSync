@@ -44,16 +44,9 @@ class TaskController extends Controller
     {
         $this->authorize('delete', $task);
 
-        $boardId = $task->column->board->id;
-
         $this->taskService->deleteTask($task);
 
-        if (request()->wantsJson()) {
-            return response()->json(['message' => 'Task deleted successfully.']);
-        }
-
-        return redirect()->route('boards.show', $boardId)
-            ->with('success', 'Task deleted successfully.');
+        return response()->json(['message' => 'Task deleted successfully.']);
     }
 
 

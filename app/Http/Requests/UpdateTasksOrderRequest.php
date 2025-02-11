@@ -25,10 +25,11 @@ class UpdateTasksOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tasks' => 'required|array',
+            'tasks' => 'array',
             'tasks.*.id' => 'required|exists:tasks,id',
             'tasks.*.position' => 'required|integer',
             'tasks.*.column_id' => 'required|exists:columns,id',
         ];
     }
+
 }
