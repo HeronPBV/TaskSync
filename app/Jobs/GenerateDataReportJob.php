@@ -31,7 +31,8 @@ class GenerateDataReportJob implements ShouldQueue
     public function handle()
     {
         try {
-            $today = Carbon::now()->toDateString();
+            $now = Carbon::now();
+            $today = $now->toDateString();
 
             $reportData = [
                 'total_boards' => Board::count(),
@@ -43,10 +44,10 @@ class GenerateDataReportJob implements ShouldQueue
                 'columns_deleted_today' => Column::onlyTrashed()->whereDate('deleted_at', $today)->count(),
                 'boards_created_today' => Board::whereDate('created_at', $today)->count(),
                 'boards_deleted_today' => Board::onlyTrashed()->whereDate('deleted_at', $today)->count(),
-                'generated_at' => Carbon::now()->toDateTimeString(),
+                'generated_at' => $now->toDateTimeString(),
             ];
 
-            Cache::put('latest_data_report', $reportData, Carbon::now()->addHour());
+            Cache::put('latest_data_report', $reportData, $now->addHour());
 
             Log::info('Report generated successfully.', $reportData);
         } catch (\Exception $e) {
