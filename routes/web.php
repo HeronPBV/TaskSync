@@ -1,15 +1,15 @@
 <?php
 
-use Inertia\Inertia;
-use App\Models\Board;
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Request;
+
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ProfileController;
 
 
 /*
@@ -23,47 +23,56 @@ use App\Http\Controllers\ReportController;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-Route::get('/dashboard', function () {
-    $boards = Board::select()->get();
-    return Inertia::render('Dashboard', ['boards' => $boards]);
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
 require __DIR__ . '/auth.php';
 
+Route::get('/', [HomeController::class, 'home'])
+    ->name('home');
+
 Route::middleware('auth')->group(function () {
 
-    Route::resource('boards', BoardController::class)->except('index', 'create', 'edit');
-    Route::resource('boards.columns', ColumnController::class)->except('index', 'create', 'edit', 'show')->shallow();
-    Route::resource('columns.tasks', TaskController::class)->except('index', 'create', 'edit', 'show')->shallow();
+    //Home Routes
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])
+        ->name('dashboard');
 
-    Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder')->middleware('auth');
 
-    Route::get('/user', function () {
-        return response()->json(auth()->user());
-    });
+    //Profile Routes
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
 
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
-    Route::get('/dashboard/reports', function () {
-        return Inertia::render('Reports/ReportIndex');
-    })->name('reports.view');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
 
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->name('profile.destroy');
+
+
+    //Boards, Coluns and Task Routes
+    Route::apiResource('boards', BoardController::class)
+        ->except('index');
+
+    Route::apiResource('boards.columns', ColumnController::class)
+        ->except('index', 'show')->shallow();
+
+    Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])
+        ->name('tasks.reorder');
+
+    Route::apiResource('columns.tasks', TaskController::class)
+        ->except('index', 'show')->shallow();
+
+
+    //User Routes
+    Route::get('/user', [UserController::class, 'index'])
+        ->name('user.index');
+
+
+    //Report Routes
+    Route::get('/reports', [ReportController::class, 'index'])
+        ->name('reports.index');
+
+    Route::post('/reports/generate', [ReportController::class, 'generate'])
+        ->name('reports.generate');
+
+    Route::get('/dashboard/reports', [ReportController::class, 'show'])
+        ->name('reports.show');
 
 });
-
-

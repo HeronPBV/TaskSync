@@ -33,7 +33,6 @@ class BoardCreated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // Podemos usar o mesmo canal "boards" para ambos os eventos
         return new Channel('boards');
     }
 

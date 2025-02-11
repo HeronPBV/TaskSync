@@ -8,7 +8,6 @@ use App\Jobs\GenerateDataReportJob;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-// Ensure a fresh database for each test
 uses(RefreshDatabase::class)->in(__DIR__);
 
 beforeEach(function () {

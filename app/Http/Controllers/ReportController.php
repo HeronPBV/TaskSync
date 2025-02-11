@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Jobs\GenerateDataReportJob;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,6 +17,11 @@ class ReportController extends Controller
         }
 
         return response()->json(['report' => $report]);
+    }
+
+    public function show()
+    {
+        return Inertia::render('Reports/ReportIndex');
     }
 
     public function generate()

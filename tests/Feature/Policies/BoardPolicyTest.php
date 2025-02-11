@@ -16,19 +16,23 @@ uses(RefreshDatabase::class)->in(__DIR__);
 |
 */
 
-it('allows any user to view any board', function () {
-    $user = User::factory()->create();
-    $board = Board::factory()->create();
+it('allows only the owner to view the board', function () {
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $board = Board::factory()->create(['user_id' => $owner->id]);
 
     $policy = new BoardPolicy();
-    expect($policy->view($user, $board))->toBeTrue();
+
+    expect($policy->view($owner, $board))->toBeTrue();
+
+    expect($policy->view($otherUser, $board))->toBeFalse();
 });
+
 
 it('allows any authenticated user to create a board', function () {
     $user = User::factory()->create();
 
     $policy = new BoardPolicy();
-    // Neste exemplo, criamos um board, mas a policy "create" não precisa de um board já criado
     expect($policy->create($user))->toBeTrue();
 });
 

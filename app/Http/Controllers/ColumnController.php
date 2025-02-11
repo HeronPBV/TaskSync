@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateColumnRequest;
 use App\Models\Board;
 use App\Models\Column;
 use App\Services\ColumnService;
-use Inertia\Inertia;
 
 class ColumnController extends Controller
 {

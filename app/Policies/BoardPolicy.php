@@ -4,14 +4,12 @@ namespace App\Policies;
 
 use App\Models\Board;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BoardPolicy
 {
     public function view(User $user, Board $board): bool
     {
-        // All users can see all boards, just to simplify demonstrate realtime updates
-        return true;
+        return $user->id === $board->user_id;
     }
 
     public function create(User $user): bool
