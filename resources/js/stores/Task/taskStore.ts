@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
 import type { Task } from "@/interfaces/Task/Task";
+import { socketService } from "@/services/socketService";
 
 /**
  * Store for managing tasks.
@@ -168,6 +169,26 @@ export const useTaskStore = defineStore("taskStore", {
                 console.error("Error updating task:", error);
                 throw error;
             }
+        },
+
+        registerWebSocketEvents() {
+            socketService.on("TaskCreated", (data) => {
+                this.tasksByColumn[data.task.column_id].push(data.task);
+            });
+
+            socketService.on("TaskUpdated", (data) => {
+                const tasks = this.tasksByColumn[data.task.column_id] || [];
+                const index = tasks.findIndex((t) => t.id === data.task.id);
+                if (index !== -1) {
+                    tasks[index] = data.task;
+                }
+            });
+
+            socketService.on("TaskDeleted", (data) => {
+                this.tasksByColumn[data.task.column_id] = this.tasksByColumn[
+                    data.task.column_id
+                ].filter((t) => t.id !== data.task.id);
+            });
         },
     },
 });

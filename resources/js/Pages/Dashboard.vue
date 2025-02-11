@@ -43,6 +43,8 @@ import BoardAddForm from "@/Components/Board/BoardAddForm.vue";
 import { ref, onMounted, computed } from "vue";
 import { useBoardStore } from "@/stores/Board/boardStore";
 import { useUserStore } from "@/stores/User/userStore";
+import { useColumnStore } from "@/stores/Column/columnStore";
+import { useTaskStore } from "@/stores/Task/taskStore";
 import type { Board } from "@/interfaces/Board/Board";
 
 const props = defineProps<{
@@ -53,6 +55,8 @@ const boards = computed(() => boardStore.boards);
 
 const boardStore = useBoardStore();
 const userStore = useUserStore();
+const columnStore = useColumnStore();
+const taskStore = useTaskStore();
 
 const showForm = ref(false);
 
@@ -60,7 +64,11 @@ const handleBoardAdded = (newBoard: Board) => {
     showForm.value = false;
 };
 
-onMounted(() => {
+onMounted(async () => {
     boardStore.boards = [...props.boards];
+    boardStore.registerWebSocketEvents();
+    columnStore.registerWebSocketEvents();
+    taskStore.registerWebSocketEvents();
+    await userStore.fetchUser();
 });
 </script>

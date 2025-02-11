@@ -70,8 +70,6 @@ const canDelete = computed(() => {
     );
 });
 
-console.log("User da store: " + userStore.user);
-
 const handleDelete = async () => {
     if (
         confirm(

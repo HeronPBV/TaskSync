@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
 import type { Column } from "@/interfaces/Column/Column";
+import { socketService } from "@/services/socketService";
 
 /**
  * Store for managing columns.
@@ -118,6 +119,27 @@ export const useColumnStore = defineStore("columnStore", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        registerWebSocketEvents() {
+            socketService.on("ColumnCreated", (data) => {
+                this.columns.push(data.column);
+            });
+
+            socketService.on("ColumnUpdated", (data) => {
+                const index = this.columns.findIndex(
+                    (c) => c.id === data.column.id
+                );
+                if (index !== -1) {
+                    this.columns[index] = data.column;
+                }
+            });
+
+            socketService.on("ColumnDeleted", (data) => {
+                this.columns = this.columns.filter(
+                    (c) => c.id !== data.column.id
+                );
+            });
         },
     },
 });

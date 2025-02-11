@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
 import type { Board } from "@/interfaces/Board/Board";
+import { socketService } from "@/services/socketService";
 
 /**
  * Store for managing boards.
@@ -98,6 +99,32 @@ export const useBoardStore = defineStore("boardStore", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        registerWebSocketEvents() {
+            socketService.on("BoardUpdated", (data) => {
+                console.log("Board updated event received:", data.board);
+                const index = this.boards.findIndex(
+                    (b) => b.id === data.board.id
+                );
+                if (index !== -1) {
+                    this.boards[index] = data.board;
+                } else {
+                    this.boards.push(data.board);
+                }
+            });
+
+            socketService.on("BoardCreated", (data) => {
+                console.log("Board created event received:", data.board);
+                if (!this.boards.some((b) => b.id === data.board.id)) {
+                    this.boards.push(data.board);
+                }
+            });
+
+            socketService.on("BoardDeleted", (data) => {
+                console.log("Board deleted event received:", data.board);
+                this.boards = this.boards.filter((b) => b.id !== data.board.id);
+            });
         },
     },
 });
