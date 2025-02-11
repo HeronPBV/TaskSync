@@ -1,6 +1,6 @@
 <template>
     <p class="text-gray-500 text-xs italic mx-auto mb-2 w-fit">
-        Double click in a card to update board data
+        Double click on your board cards to update board data
     </p>
     <div
         v-if="boards.length"

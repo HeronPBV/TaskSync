@@ -9,6 +9,8 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +56,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', function () {
         return response()->json(auth()->user());
     });
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
+    Route::get('/dashboard/reports', function () {
+        return Inertia::render('Reports/ReportIndex');
+    })->name('reports.view');
+
 
 });
 

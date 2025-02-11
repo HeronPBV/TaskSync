@@ -2,9 +2,12 @@ import "./bootstrap";
 import "../css/app.css";
 
 import { createApp, h, type DefineComponent } from "vue";
+import PrimeVue from "primevue/config";
+import ToastService from "primevue/toastservice";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { createPinia } from "pinia";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
+import "primevue/resources/themes/aura-light-green/theme.css";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -24,7 +27,9 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(pinia)
-            .use(ZiggyVue);
+            .use(ZiggyVue)
+            .use(PrimeVue)
+            .use(ToastService);
         app.mount(el);
         return app;
     },
