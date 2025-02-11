@@ -23,11 +23,6 @@ class BoardController extends Controller
         $this->boardService = $boardService;
     }
 
-    public function create()
-    {
-        return Inertia::render('Boards/Create');
-    }
-
     public function store(StoreBoardRequest $request)
     {
         $board = $this->boardService->createBoard($request->validated(), auth()->user());
@@ -48,15 +43,6 @@ class BoardController extends Controller
 
         return Inertia::render('Boards/Show', [
             'board' => $boardWithDetails,
-        ]);
-    }
-
-    public function edit(Board $board)
-    {
-        $this->authorize('update', $board);
-
-        return Inertia::render('Boards/Edit', [
-            'board' => $board,
         ]);
     }
 

@@ -21,27 +21,6 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index(Column $column)
-    {
-        $this->authorize('view', $column);
-
-        $tasks = $this->taskService->getTasksForColumn($column);
-
-        return Inertia::render('Tasks/Index', [
-            'column' => $column,
-            'tasks' => $tasks,
-        ]);
-    }
-
-    public function create(Column $column)
-    {
-        $this->authorize('create', [Task::class, $column]);
-
-        return Inertia::render('Tasks/Create', [
-            'column' => $column,
-        ]);
-    }
-
     public function store(StoreTaskRequest $request, Column $column)
     {
         $task = $this->taskService->createTask($column, $request->validated());
@@ -52,15 +31,6 @@ class TaskController extends Controller
 
         return redirect()->route('boards.show', $column->board->id)
             ->with('success', 'Task created successfully.');
-    }
-
-    public function edit(Task $task)
-    {
-        $this->authorize('update', $task);
-
-        return Inertia::render('Tasks/Edit', [
-            'task' => $task,
-        ]);
     }
 
     public function update(UpdateTaskRequest $request, Task $task)

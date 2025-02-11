@@ -45,9 +45,9 @@ require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
 
-    Route::resource('boards', BoardController::class)->except('index');
-    Route::resource('boards.columns', ColumnController::class)->shallow();
-    Route::resource('columns.tasks', TaskController::class)->shallow();
+    Route::resource('boards', BoardController::class)->except('index', 'create', 'edit');
+    Route::resource('boards.columns', ColumnController::class)->except('index', 'create', 'edit', 'show')->shallow();
+    Route::resource('columns.tasks', TaskController::class)->except('index', 'create', 'edit', 'show')->shallow();
 
     Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder')->middleware('auth');
 

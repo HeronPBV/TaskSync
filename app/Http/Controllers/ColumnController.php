@@ -18,41 +18,11 @@ class ColumnController extends Controller
         $this->columnService = $columnService;
     }
 
-    public function index(Board $board)
-    {
-        $this->authorize('view', $board);
-
-        $columns = $this->columnService->getColumnsForBoard($board);
-
-        return Inertia::render('Columns/Index', [
-            'board' => $board,
-            'columns' => $columns,
-        ]);
-    }
-
-    public function create(Board $board)
-    {
-        $this->authorize('create', [\App\Models\Column::class, $board]);
-
-        return Inertia::render('Columns/Create', [
-            'board' => $board,
-        ]);
-    }
-
     public function store(StoreColumnRequest $request, Board $board)
     {
         $column = $this->columnService->createColumn($board, $request->validated());
 
         return response()->json(['column' => $column]);
-    }
-
-    public function edit(Column $column)
-    {
-        $this->authorize('update', $column);
-
-        return Inertia::render('Columns/Edit', [
-            'column' => $column,
-        ]);
     }
 
     public function update(UpdateColumnRequest $request, Column $column)
