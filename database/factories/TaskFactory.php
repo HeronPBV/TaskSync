@@ -15,7 +15,7 @@ class TaskFactory extends Factory
         return [
             'column_id' => Column::factory(),
             'title' => $this->faker->sentence(4),
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->paragraph(),
             'due_date' => $this->faker->optional()->dateTimeBetween('now', '+1 month'),
             'priority' => $this->faker->randomElement(['high', 'medium', 'low']),
             'position' => $this->faker->numberBetween(1, 10),

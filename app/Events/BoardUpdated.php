@@ -44,7 +44,7 @@ class BoardUpdated implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'board' => $this->board,
+            'board' => $this->board->toArray(),
             'senderId' => $this->senderId,
         ];
     }

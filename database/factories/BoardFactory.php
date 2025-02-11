@@ -16,7 +16,7 @@ class BoardFactory extends Factory
 
             'user_id' => User::factory(),
             'name' => $this->faker->sentence(3),
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->paragraph(),
 
         ];
     }

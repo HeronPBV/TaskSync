@@ -15,7 +15,7 @@ class ColumnFactory extends Factory
         return [
 
             'board_id' => Board::factory(),
-            'name' => $this->faker->word,
+            'name' => $this->faker->sentence(1),
             'position' => $this->faker->numberBetween(1, 10),
 
         ];
