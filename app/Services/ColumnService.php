@@ -22,7 +22,7 @@ class ColumnService
     {
         $cacheKey = "board:{$board->id}:columns";
         return Cache::remember($cacheKey, $this->cacheTTL, function () use ($board) {
-            return $board->columns()->get();
+            return $board->columns()->with('tasks')->get();
         });
     }
 
