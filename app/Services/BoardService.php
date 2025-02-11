@@ -6,18 +6,25 @@ use App\Exceptions\ServiceException;
 use App\Models\User;
 use App\Models\Board;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class BoardService
 {
+    // TTL for board caches (in seconds, here 3600 = 1 hour)
+    protected $cacheTTL = 3600;
+
     /**
-     * Retrieve all boards for a given user.
+     * Retrieve all boards for a given user, caching the result.
      *
      * @param User $user
      * @return Collection
      */
     public function getBoardsForUser($user): Collection
     {
-        return Board::where('user_id', $user->id)->get();
+        $cacheKey = "user:{$user->id}:boards";
+        return Cache::remember($cacheKey, $this->cacheTTL, function () use ($user) {
+            return Board::where('user_id', $user->id)->get();
+        });
     }
 
     /**
@@ -35,6 +42,8 @@ class BoardService
         if (!$board) {
             throw new ServiceException("Board creation failed.");
         }
+        Cache::forget("user:{$user->id}:boards");
+        Cache::forget("board:{$board->id}:details");
         return $board;
     }
 
@@ -52,6 +61,8 @@ class BoardService
         if (!$result) {
             throw new ServiceException("Board update failed.");
         }
+        Cache::forget("board:{$board->id}:details");
+        Cache::forget("user:{$board->user_id}:boards");
         return $result;
     }
 
@@ -68,17 +79,23 @@ class BoardService
         if (!$result) {
             throw new ServiceException("Board deletion failed.");
         }
+        // Invalidate caches
+        Cache::forget("board:{$board->id}:details");
+        Cache::forget("user:{$board->user_id}:boards");
         return $result;
     }
 
     /**
-     * Retrieve a board with its associated columns and tasks loaded.
+     * Retrieve a board with its associated columns and tasks loaded, caching the result.
      *
      * @param Board $board
      * @return Board
      */
     public function getBoardWithDetails(Board $board): Board
     {
-        return $board->load('columns.tasks');
+        $cacheKey = "board:{$board->id}:details";
+        return Cache::remember($cacheKey, $this->cacheTTL, function () use ($board) {
+            return $board->load('columns.tasks');
+        });
     }
 }

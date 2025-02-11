@@ -9,18 +9,24 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Collection;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 
 class TaskService
 {
+    protected $cacheTTL = 3600; // 1 hour
+
     /**
-     * Retrieve all tasks for a given column.
+     * Retrieve all tasks for a given column, caching the result.
      *
      * @param Column $column
      * @return Collection
      */
     public function getTasksForColumn(Column $column): Collection
     {
-        return $column->tasks()->get();
+        $cacheKey = "column:{$column->id}:tasks";
+        return Cache::remember($cacheKey, $this->cacheTTL, function () use ($column) {
+            return $column->tasks()->orderBy('position')->get();
+        });
     }
 
     /**
@@ -35,13 +41,13 @@ class TaskService
     {
         try {
             DB::transaction(function () use ($column) {
-                // Increment positions of existing tasks.
                 $column->tasks()->increment('position');
             });
             $task = $column->tasks()->create($data + ['position' => 1]);
             if (!$task) {
                 throw new ServiceException("Task creation failed.");
             }
+            Cache::forget("column:{$column->id}:tasks");
             return $task;
         } catch (Exception $e) {
             throw new ServiceException("Task creation failed: " . $e->getMessage(), 0, $e);
@@ -62,6 +68,7 @@ class TaskService
         if (!$result) {
             throw new ServiceException("Task update failed.");
         }
+        Cache::forget("column:{$task->column_id}:tasks");
         return $result;
     }
 
@@ -78,6 +85,7 @@ class TaskService
         if (!$result) {
             throw new ServiceException("Task deletion failed.");
         }
+        Cache::forget("column:{$task->column_id}:tasks");
         return $result;
     }
 
@@ -101,6 +109,7 @@ class TaskService
                     throw new ServiceException("Failed to update task with id: {$data['id']}");
                 }
             }
+            Cache::forget("column:{$destinationColumn->id}:tasks");
             return true;
         } catch (Exception $e) {
             Log::error('Error reordering tasks: ' . $e->getMessage());

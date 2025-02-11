@@ -6,18 +6,24 @@ use App\Exceptions\ServiceException;
 use App\Models\Board;
 use App\Models\Column;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ColumnService
 {
+    protected $cacheTTL = 3600; // 1 hour TTL
+
     /**
-     * Retrieve all columns for a given board.
+     * Retrieve all columns for a given board, caching the result.
      *
      * @param Board $board
      * @return Collection
      */
     public function getColumnsForBoard(Board $board): Collection
     {
-        return $board->columns()->get();
+        $cacheKey = "board:{$board->id}:columns";
+        return Cache::remember($cacheKey, $this->cacheTTL, function () use ($board) {
+            return $board->columns()->get();
+        });
     }
 
     /**
@@ -37,6 +43,7 @@ class ColumnService
         if (!$column) {
             throw new ServiceException("Column creation failed.");
         }
+        Cache::forget("board:{$board->id}:columns");
         return $column;
     }
 
@@ -54,6 +61,7 @@ class ColumnService
         if (!$result) {
             throw new ServiceException("Column update failed.");
         }
+        Cache::forget("board:{$column->board_id}:columns");
         return $result;
     }
 
@@ -70,6 +78,7 @@ class ColumnService
         if (!$result) {
             throw new ServiceException("Column deletion failed.");
         }
+        Cache::forget("board:{$column->board_id}:columns");
         return $result;
     }
 }
