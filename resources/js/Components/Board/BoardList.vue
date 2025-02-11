@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted } from "vue";
+import { defineProps } from "vue";
 import BoardCard from "@/Components/Board/BoardCard.vue";
 import type { Board } from "@/interfaces/Board/Board";
 

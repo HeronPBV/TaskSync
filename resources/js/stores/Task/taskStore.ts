@@ -1,4 +1,3 @@
-// resources/js/stores/Task/taskStore.ts
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";

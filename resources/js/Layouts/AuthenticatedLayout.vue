@@ -39,8 +39,8 @@ const showingNavigationDropdown = ref(false);
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('reports.view')"
-                                    :active="route().current('reports.view')"
+                                    :href="route('reports.show')"
+                                    :active="route().current('reports.show')"
                                 >
                                     Activity Report
                                 </NavLink>

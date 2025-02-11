@@ -1,4 +1,3 @@
-// resources/js/Stores/Column/columnStore.ts
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";

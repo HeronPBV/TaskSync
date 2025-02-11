@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
 class SocketService {
-    private socket: Socket;
+    private readonly socket: Socket;
     private clientId: string | null = null;
 
     constructor() {

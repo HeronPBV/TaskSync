@@ -83,7 +83,6 @@ import type { Task } from "@/interfaces/Task/Task";
 import { useTaskStore } from "@/stores/Task/taskStore";
 import { useColumnStore } from "@/stores/Column/columnStore";
 import debounce from "lodash.debounce";
-import { route } from "ziggy-js";
 
 const props = defineProps<{ column: Column }>();
 const columnId = props.column.id;
