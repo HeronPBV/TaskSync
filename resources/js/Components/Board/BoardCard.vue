@@ -4,6 +4,7 @@
         @dblclick="toggleEdit"
     >
         <button
+            v-if="canDelete"
             @click="handleDelete"
             class="absolute -top-1 -left-1 bg-red-300 text-red-600 p-2 rounded-full shadow w-5 h-5 hover:bg-red-400 flex justify-center items-center text-xl"
             title="Delete Board"
@@ -38,16 +39,19 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref, computed } from "vue";
 import { route } from "ziggy-js";
 import { Link } from "@inertiajs/vue3";
 import { useBoardStore } from "@/stores/Board/boardStore";
+import { useUserStore } from "@/stores/User/userStore";
 import type { Board } from "@/interfaces/Board/Board";
 import BoardEditForm from "@/Components/Board/BoardEditForm.vue";
 
 const props = defineProps<{ board: Board }>();
 
 const boardStore = useBoardStore();
+const userStore = useUserStore();
+
 const isEditing = ref(false);
 
 const toggleEdit = () => {
@@ -57,6 +61,16 @@ const toggleEdit = () => {
 const handleBoardUpdated = (updatedBoard: Board) => {
     isEditing.value = false;
 };
+
+const canDelete = computed(() => {
+    return (
+        userStore.user &&
+        props.board.user_id &&
+        userStore.user.id === props.board.user_id
+    );
+});
+
+console.log("User da store: " + userStore.user);
 
 const handleDelete = async () => {
     if (

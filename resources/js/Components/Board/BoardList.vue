@@ -12,9 +12,15 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, onMounted } from "vue";
 import BoardCard from "@/Components/Board/BoardCard.vue";
 import type { Board } from "@/interfaces/Board/Board";
+import { useUserStore } from "@/stores/User/userStore";
 
 defineProps<{ boards: Board[] }>();
+
+const userStore = useUserStore();
+onMounted(async () => {
+    await userStore.fetchUser();
+});
 </script>

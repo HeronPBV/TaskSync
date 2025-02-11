@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use App\Models\Board;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ColumnController;
@@ -50,7 +51,10 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])->name('tasks.reorder')->middleware('auth');
 
-
-
+    Route::get('/user', function () {
+        return response()->json(auth()->user());
+    });
 
 });
+
+

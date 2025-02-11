@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
+use App\Broadcasting\SocketIoBroadcaster;
+use Illuminate\Support\Facades\Broadcast;
 
 class BroadcastServiceProvider extends ServiceProvider
 {
@@ -12,8 +13,8 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Broadcast::routes();
-
-        require base_path('routes/channels.php');
+        Broadcast::extend('socketio', function ($app) {
+            return new SocketIoBroadcaster();
+        });
     }
 }

@@ -1,8 +1,7 @@
-export interface Board {
+export interface User {
     id: number;
-    user_id: number;
     name: string;
-    description?: string;
+    email: string;
     created_at?: string;
     updated_at?: string;
 }

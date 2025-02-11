@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Board;
+use App\Events\BoardCreated;
+use App\Events\BoardUpdated;
 use App\Services\BoardService;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreBoardRequest;
@@ -26,6 +28,8 @@ class BoardController extends Controller
     public function store(StoreBoardRequest $request)
     {
         $board = $this->boardService->createBoard($request->validated(), auth()->user());
+
+        broadcast(new BoardCreated($board))->toOthers();
 
         return response()->json(['board' => $board]);
 
@@ -55,9 +59,7 @@ class BoardController extends Controller
     {
         $this->boardService->updateBoard($board, $request->validated());
 
-        Http::post(env('SOCKET_SERVER_URL') . '/broadcast/board-updated', [
-            'board' => $board,
-        ]);
+        broadcast(new BoardUpdated($board))->toOthers();
 
         return response()->json([
             'board' => $board,

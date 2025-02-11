@@ -49,6 +49,11 @@ return [
             ],
         ],
 
+        'socketio' => [
+            'driver' => 'socketio',
+            'url' => env('SOCKET_SERVER_URL', 'http://localhost:6001'),
+        ],
+
 
         'ably' => [
             'driver' => 'ably',

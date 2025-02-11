@@ -56,7 +56,8 @@
 
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits, onMounted } from "vue";
-import { useBoardStore, Board } from "@/stores/Board/boardStore";
+import { useBoardStore } from "@/stores/Board/boardStore";
+import type { Board } from "@/interfaces/Board/Board";
 
 const props = defineProps<{ board: Board }>();
 const emit = defineEmits<{

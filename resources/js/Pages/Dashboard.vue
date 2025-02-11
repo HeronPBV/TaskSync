@@ -42,6 +42,7 @@ import BoardList from "@/Components/Board/BoardList.vue";
 import BoardAddForm from "@/Components/Board/BoardAddForm.vue";
 import { ref, onMounted, computed } from "vue";
 import { useBoardStore } from "@/stores/Board/boardStore";
+import { useUserStore } from "@/stores/User/userStore";
 import type { Board } from "@/interfaces/Board/Board";
 
 const props = defineProps<{
@@ -51,6 +52,7 @@ const props = defineProps<{
 const boards = computed(() => boardStore.boards);
 
 const boardStore = useBoardStore();
+const userStore = useUserStore();
 
 const showForm = ref(false);
 

@@ -1,15 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { route } from "ziggy-js";
-
-/**
- * Interface representing a Board.
- */
-export interface Board {
-    id: number;
-    name: string;
-    description?: string;
-}
+import type { Board } from "@/interfaces/Board/Board";
 
 /**
  * Store for managing boards.
