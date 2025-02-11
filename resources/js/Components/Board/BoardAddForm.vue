@@ -56,7 +56,8 @@
 
 <script lang="ts" setup>
 import { ref, defineEmits } from "vue";
-import { useBoardStore, Board } from "@/stores/Board/boardStore";
+import { useBoardStore } from "@/stores/Board/boardStore";
+import type { Board } from "@/interfaces/Board/Board";
 
 const emit = defineEmits<{
     (e: "board-added", newBoard: Board): void;

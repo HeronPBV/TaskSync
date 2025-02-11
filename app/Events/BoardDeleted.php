@@ -7,7 +7,7 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 
-class BoardUpdated implements ShouldBroadcast
+class BoardDeleted implements ShouldBroadcast
 {
     use SerializesModels;
 
@@ -28,8 +28,6 @@ class BoardUpdated implements ShouldBroadcast
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return Channel|array
      */
     public function broadcastOn()
     {
@@ -38,7 +36,7 @@ class BoardUpdated implements ShouldBroadcast
 
     public function broadcastAs()
     {
-        return 'BoardUpdated';
+        return 'BoardDeleted';
     }
 
     public function broadcastWith()

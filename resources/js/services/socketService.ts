@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 
 class SocketService {
     private socket: Socket;
+    private clientId: string | null = null;
 
     constructor() {
         const socketServerUrl =
@@ -12,8 +13,13 @@ class SocketService {
         });
 
         this.socket.on("connect", () => {
-            console.log("Connected to Socket.IO server:", this.socket.id);
+            this.clientId = this.socket.id ?? null;
+            console.log("Connected to Socket.IO server:", this.clientId);
         });
+    }
+
+    getClientId(): string | null {
+        return this.clientId;
     }
 
     /**
@@ -39,7 +45,7 @@ class SocketService {
      * @param data - The payload to send.
      */
     emit(event: string, data: any) {
-        this.socket.emit(event, data);
+        this.socket.emit(event, { ...data, clientId: this.clientId });
     }
 }
 

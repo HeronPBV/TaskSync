@@ -39,10 +39,16 @@ class SocketIoBroadcaster implements Broadcaster
      */
     public function broadcast(array $channels, $event, array $payload = [])
     {
+        $senderId = $payload['senderId'] ?? null;
+        if (isset($payload['senderId'])) {
+            unset($payload['senderId']);
+        }
+
         $data = [
             'channels' => $channels,
             'event' => $event,
             'payload' => $payload,
+            'clientId' => $senderId,
         ];
 
         $response = Http::post($this->socketServerUrl . '/broadcast', $data);

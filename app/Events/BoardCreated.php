@@ -12,15 +12,18 @@ class BoardCreated implements ShouldBroadcast
     use SerializesModels;
 
     public $board;
+    public $senderId;
 
     /**
      * Create a new event instance.
      *
      * @param Board $board
+     * @param int|null $senderId
      */
-    public function __construct(Board $board)
+    public function __construct(Board $board, $senderId = null)
     {
         $this->board = $board;
+        $this->senderId = $senderId;
     }
 
     /**
@@ -37,5 +40,13 @@ class BoardCreated implements ShouldBroadcast
     public function broadcastAs()
     {
         return 'BoardCreated';
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'board' => $this->board,
+            'senderId' => $this->senderId,
+        ];
     }
 }

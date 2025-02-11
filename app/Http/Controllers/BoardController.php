@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Board;
 use App\Events\BoardCreated;
+use App\Events\BoardDeleted;
 use App\Events\BoardUpdated;
 use App\Services\BoardService;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\StoreBoardRequest;
 use App\Http\Requests\UpdateBoardRequest;
+use Illuminate\Http\Request;
+
 
 class BoardController extends Controller
 {
@@ -29,7 +32,9 @@ class BoardController extends Controller
     {
         $board = $this->boardService->createBoard($request->validated(), auth()->user());
 
-        broadcast(new BoardCreated($board))->toOthers();
+        $socketId = $request->header('X-Socket-ID');
+
+        broadcast(new BoardCreated($board, $socketId))->toOthers();
 
         return response()->json(['board' => $board]);
 
@@ -59,7 +64,9 @@ class BoardController extends Controller
     {
         $this->boardService->updateBoard($board, $request->validated());
 
-        broadcast(new BoardUpdated($board))->toOthers();
+        $socketId = $request->header('X-Socket-ID');
+
+        broadcast(new BoardUpdated($board, $socketId))->toOthers();
 
         return response()->json([
             'board' => $board,
@@ -69,11 +76,15 @@ class BoardController extends Controller
     }
 
 
-    public function destroy(Board $board)
+    public function destroy(Request $request, Board $board)
     {
         $this->authorize('delete', $board);
 
         $this->boardService->deleteBoard($board);
+
+        $socketId = $request->header('X-Socket-ID');
+
+        broadcast(new BoardDeleted($board, $socketId))->toOthers();
 
         return response()->json(['success' => 'Board deleted successfully.']);
     }
