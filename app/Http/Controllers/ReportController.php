@@ -13,7 +13,7 @@ class ReportController extends Controller
         $report = Cache::get('latest_data_report');
 
         if (!$report) {
-            return response()->json(['message' => 'No reports available.'], 404);
+            return response()->json(['message' => 'No reports available.']);
         }
 
         return response()->json(['report' => $report]);

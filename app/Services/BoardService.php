@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 class BoardService
 {
-    // TTL for board caches (in seconds, here 3600 = 1 hour)
-    protected $cacheTTL = 3600;
+    protected $cacheTTL = 3600; // 1 hour
 
     /**
      * Retrieve all boards for a given user, caching the result.
@@ -23,7 +22,9 @@ class BoardService
     {
         $cacheKey = "user:{$user->id}:boards";
         return Cache::remember($cacheKey, $this->cacheTTL, function () use ($user) {
-            return Board::where('user_id', $user->id)->get();
+            return Board::where('user_id', $user->id)
+                ->with('columns.tasks')
+                ->get();
         });
     }
 
@@ -42,8 +43,8 @@ class BoardService
         if (!$board) {
             throw new ServiceException("Board creation failed.");
         }
-        Cache::forget("user:{$user->id}:boards");
-        Cache::forget("board:{$board->id}:details");
+
+        $this->invalidateBoardCache($board);
         return $board;
     }
 
@@ -61,8 +62,8 @@ class BoardService
         if (!$result) {
             throw new ServiceException("Board update failed.");
         }
-        Cache::forget("board:{$board->id}:details");
-        Cache::forget("user:{$board->user_id}:boards");
+
+        $this->invalidateBoardCache($board);
         return $result;
     }
 
@@ -79,9 +80,8 @@ class BoardService
         if (!$result) {
             throw new ServiceException("Board deletion failed.");
         }
-        // Invalidate caches
-        Cache::forget("board:{$board->id}:details");
-        Cache::forget("user:{$board->user_id}:boards");
+
+        $this->invalidateBoardCache($board);
         return $result;
     }
 
@@ -95,7 +95,19 @@ class BoardService
     {
         $cacheKey = "board:{$board->id}:details";
         return Cache::remember($cacheKey, $this->cacheTTL, function () use ($board) {
-            return $board->load('columns.tasks');
+            return $board->load(['columns.tasks']);
         });
+    }
+
+    /**
+     * Invalidate cache keys for a board.
+     *
+     * @param Board $board
+     */
+    protected function invalidateBoardCache(Board $board): void
+    {
+        Cache::forget("board:{$board->id}:details");
+        Cache::forget("user:{$board->user_id}:boards");
+        Cache::forget("board:{$board->id}:columns");
     }
 }

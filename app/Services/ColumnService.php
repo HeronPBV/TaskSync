@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ColumnService
 {
-    protected $cacheTTL = 3600; // 1 hour TTL
+    protected $cacheTTL = 3600; // 1 hour
 
     /**
      * Retrieve all columns for a given board, caching the result.
@@ -22,7 +22,7 @@ class ColumnService
     {
         $cacheKey = "board:{$board->id}:columns";
         return Cache::remember($cacheKey, $this->cacheTTL, function () use ($board) {
-            return $board->columns()->with('tasks')->get();
+            return $board->columns()->with('tasks')->get(); // Ensure eager loading
         });
     }
 
@@ -36,14 +36,13 @@ class ColumnService
      */
     public function createColumn(Board $board, array $data): Column
     {
-        $lastPosition = $board->columns()->max('position');
-        $data['position'] = is_null($lastPosition) ? 1 : $lastPosition + 1;
         $data['board_id'] = $board->id;
         $column = Column::create($data);
         if (!$column) {
             throw new ServiceException("Column creation failed.");
         }
-        Cache::forget("board:{$board->id}:columns");
+
+        $this->invalidateColumnCache($board);
         return $column;
     }
 
@@ -61,7 +60,8 @@ class ColumnService
         if (!$result) {
             throw new ServiceException("Column update failed.");
         }
-        Cache::forget("board:{$column->board_id}:columns");
+
+        $this->invalidateColumnCache($column->board);
         return $result;
     }
 
@@ -78,7 +78,19 @@ class ColumnService
         if (!$result) {
             throw new ServiceException("Column deletion failed.");
         }
-        Cache::forget("board:{$column->board_id}:columns");
+
+        $this->invalidateColumnCache($column->board);
         return $result;
+    }
+
+    /**
+     * Invalidate cache keys related to a board's columns.
+     *
+     * @param Board $board
+     */
+    protected function invalidateColumnCache(Board $board): void
+    {
+        Cache::forget("board:{$board->id}:columns");
+        Cache::forget("board:{$board->id}:details");
     }
 }

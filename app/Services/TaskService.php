@@ -43,11 +43,13 @@ class TaskService
             DB::transaction(function () use ($column) {
                 $column->tasks()->increment('position');
             });
+
             $task = $column->tasks()->create($data + ['position' => 1]);
             if (!$task) {
                 throw new ServiceException("Task creation failed.");
             }
-            Cache::forget("column:{$column->id}:tasks");
+
+            $this->invalidateTaskCache($column);
             return $task;
         } catch (Exception $e) {
             throw new ServiceException("Task creation failed: " . $e->getMessage(), 0, $e);
@@ -68,7 +70,8 @@ class TaskService
         if (!$result) {
             throw new ServiceException("Task update failed.");
         }
-        Cache::forget("column:{$task->column_id}:tasks");
+
+        $this->invalidateTaskCache($task->column);
         return $result;
     }
 
@@ -85,12 +88,13 @@ class TaskService
         if (!$result) {
             throw new ServiceException("Task deletion failed.");
         }
-        Cache::forget("column:{$task->column_id}:tasks");
+
+        $this->invalidateTaskCache($task->column);
         return $result;
     }
 
     /**
-     * Reorder tasks within a column.
+     * Reorder tasks within a column and invalidate cache.
      *
      * @param Column $destinationColumn
      * @param array $tasksData Array of tasks with keys: id, position, column_id.
@@ -100,20 +104,32 @@ class TaskService
     public function reorderTasks(Column $destinationColumn, array $tasksData): bool
     {
         try {
-            foreach ($tasksData as $data) {
-                $updated = Task::where('id', $data['id'])->update([
-                    'position' => $data['position'],
-                    'column_id' => $destinationColumn->id,
-                ]);
-                if (!$updated) {
-                    throw new ServiceException("Failed to update task with id: {$data['id']}");
+            DB::transaction(function () use ($destinationColumn, $tasksData) {
+                foreach ($tasksData as $data) {
+                    Task::where('id', $data['id'])->update([
+                        'position' => $data['position'],
+                        'column_id' => $destinationColumn->id,
+                    ]);
                 }
-            }
-            Cache::forget("column:{$destinationColumn->id}:tasks");
+            });
+
+            $this->invalidateTaskCache($destinationColumn);
             return true;
         } catch (Exception $e) {
             Log::error('Error reordering tasks: ' . $e->getMessage());
             throw new ServiceException("Error reordering tasks: " . $e->getMessage(), 0, $e);
         }
+    }
+
+    /**
+     * Invalidate cache for a column's tasks and update related board cache.
+     *
+     * @param Column $column
+     */
+    protected function invalidateTaskCache(Column $column): void
+    {
+        Cache::forget("column:{$column->id}:tasks");
+        Cache::forget("board:{$column->board->id}:details");
+        Cache::forget("board:{$column->board->id}:columns");
     }
 }

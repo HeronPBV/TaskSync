@@ -21,8 +21,8 @@
                         <ReportActivity :report="report" />
                     </div>
 
-                    <div v-else class="text-red-500 text-center mt-4">
-                        No report available.
+                    <div v-else class="text-black text-center mt-4">
+                        No report available. Generate a new one!
                     </div>
                 </div>
             </div>
