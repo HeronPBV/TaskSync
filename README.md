@@ -1,5 +1,19 @@
 # TaskSync - Realtime Kanban Board Management System
 
+![Laravel](https://img.shields.io/badge/Laravel-10.x-red?style=for-the-badge&logo=laravel)
+![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vue.js)
+![Pinia](https://img.shields.io/badge/Pinia-✓-yellow?style=for-the-badge&logo=pinia)
+![Inertia.js](https://img.shields.io/badge/Inertia.js-1.x-purple?style=for-the-badge&logo=inertia)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-✓-blue?style=for-the-badge&logo=typescript)
+![Pest PHP](https://img.shields.io/badge/Pest-✓-pink?style=for-the-badge&logo=pestphp)
+![WebSockets](https://img.shields.io/badge/WebSockets-Socket.io-9cf?style=for-the-badge&logo=socket.io)
+![Redis](https://img.shields.io/badge/Redis-✓-red?style=for-the-badge&logo=redis)
+
+![image](https://github.com/user-attachments/assets/d29eb383-e2f6-4f67-b6b4-f9b5d4445643)
+
+
+
 ## 📌 Introduction
 
 The project is part of the technical assessment for the **Laravel Vue Full Stack Engineer** position at **Curotec**. Its sole purpose is to demonstrate **solid expertise** in **system development** using **Laravel, Vue.js, and related technologies**.
