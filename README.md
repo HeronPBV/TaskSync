@@ -56,6 +56,9 @@ This project implements best practices in **architecture, performance optimizati
 ### **Caching Strategy** for Performance Optimization
 - We implemented aggressive caching with Laravel’s cache system, ensuring that we avoid unnecessary database queries. Instead of querying the database every time a user accesses a board, we cache the results for a set time (1 hour), and when a board or task is modified, we invalidate only the relevant cache, keeping the system up-to-date without excessive reads. This aproach ensures that as the application scales with more users and boards, we wont have performance degradation.
 
+### **Use of TypeScript** in the front-end
+- TypeScript brings many advantages to front-end development: by using static typing, it prevents runtime errors by detecting type-related issues at compile time, improving reliability, and making the codebase easier to understand and refactor. As your project grows, TypeScript helps maintain consistency and reduces technical debt.
+
 ## Interesting software engineering techniques used
 
 ### Code Structure and Organization
