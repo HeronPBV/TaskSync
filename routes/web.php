@@ -45,32 +45,36 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
+    // API Throttling
+    Route::middleware('throttle:60,1')->group(function () {
 
-    //Boards, Coluns and Task Routes
-    Route::apiResource('boards', BoardController::class)
-        ->except('index');
+        // Boards, Columns, and Tasks routes
+        Route::apiResource('boards', BoardController::class)
+            ->except('index');
 
-    Route::apiResource('boards.columns', ColumnController::class)
-        ->except('index', 'show')->shallow();
+        Route::apiResource('boards.columns', ColumnController::class)
+            ->except('index', 'show')->shallow();
 
-    Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])
-        ->name('tasks.reorder');
+        Route::patch('columns/{column}/tasks/reorder', [TaskController::class, 'reorder'])
+            ->name('tasks.reorder');
 
-    Route::apiResource('columns.tasks', TaskController::class)
-        ->except('index', 'show')->shallow();
-
-
-    //User Routes
-    Route::get('/user', [UserController::class, 'index'])
-        ->name('user.index');
+        Route::apiResource('columns.tasks', TaskController::class)
+            ->except('index', 'show')->shallow();
 
 
-    //Report Routes
-    Route::get('/reports', [ReportController::class, 'index'])
-        ->name('reports.index');
+        //User Routes
+        Route::get('/user', [UserController::class, 'index'])
+            ->name('user.index');
 
-    Route::post('/reports/generate', [ReportController::class, 'generate'])
-        ->name('reports.generate');
+
+        //Report Routes
+        Route::get('/reports', [ReportController::class, 'index'])
+            ->name('reports.index');
+
+        Route::post('/reports/generate', [ReportController::class, 'generate'])
+            ->name('reports.generate');
+
+    });
 
     Route::get('/dashboard/reports', [ReportController::class, 'show'])
         ->name('reports.show');
