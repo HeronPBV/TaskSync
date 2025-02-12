@@ -39,36 +39,38 @@ export const useReportStore = defineStore("reportStore", {
          * @returns A Promise that resolves with the new Report once updated.
          */
         async waitForNewReport(
-            currentGeneratedAt: string,
+            currentGeneratedAt: string | null,
             intervalMs: number = 2000,
             maxAttempts: number = 10
-        ): Promise<Report> {
+        ): Promise<Report | null> {
             let attempt = 0;
 
-            const poll = async (): Promise<Report> => {
+            const poll = async (): Promise<Report | null> => {
                 attempt++;
                 console.log(`Polling attempt ${attempt}/${maxAttempts}`);
-                try {
-                    const response = await axios.get("/reports");
-                    const newReport: Report = response.data.report;
-                    console.log(
-                        "Polling report generated_at:",
-                        newReport.generated_at
-                    );
 
-                    if (
-                        newReport &&
-                        newReport.generated_at !== currentGeneratedAt
-                    ) {
-                        console.log("Report updated.");
-                        this.report = newReport;
-                        return newReport;
+                try {
+                    await this.fetchReport();
+
+                    if (this.report?.generated_at) {
+                        console.log(
+                            "Polling report generated_at:",
+                            this.report.generated_at
+                        );
+
+                        if (this.report.generated_at !== currentGeneratedAt) {
+                            console.log("Report updated.");
+                            return this.report;
+                        }
+                    } else {
+                        console.warn("Report not available yet, retrying...");
                     }
 
                     if (attempt >= maxAttempts) {
-                        throw new Error(
-                            "Max polling attempts reached. Report update not detected."
+                        console.warn(
+                            "Polling reached max attempts without detecting an update."
                         );
+                        return null;
                     }
 
                     return new Promise((resolve) => {
@@ -76,7 +78,7 @@ export const useReportStore = defineStore("reportStore", {
                     });
                 } catch (error) {
                     console.error("Error in polling:", error);
-                    throw error;
+                    return null;
                 }
             };
 

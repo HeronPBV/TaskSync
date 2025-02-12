@@ -7,9 +7,10 @@ const toast = useToast();
 
 const handleGenerateReport = async () => {
     try {
-        const currentGeneratedAt = reportStore.report
-            ? reportStore.report.generated_at
-            : "";
+        await reportStore.fetchReport();
+
+        const currentGeneratedAt: string =
+            reportStore.report?.generated_at ?? "";
 
         await reportStore.generateReport();
 
@@ -25,7 +26,18 @@ const handleGenerateReport = async () => {
             2000,
             10
         );
-        console.log("Final updated report:", updatedReport);
+
+        if (updatedReport) {
+            console.log("Final updated report:", updatedReport);
+        } else {
+            console.warn("Report polling reached max attempts without update.");
+            toast.add({
+                severity: "warn",
+                summary: "Report",
+                detail: "No new report found after polling.",
+                life: 3000,
+            });
+        }
     } catch (error: any) {
         console.error("Error during report update polling:", error);
         toast.add({
