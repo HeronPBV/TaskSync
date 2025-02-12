@@ -53,11 +53,6 @@ export const useReportStore = defineStore("reportStore", {
                     await this.fetchReport();
 
                     if (this.report?.generated_at) {
-                        console.log(
-                            "Polling report generated_at:",
-                            this.report.generated_at
-                        );
-
                         if (this.report.generated_at !== currentGeneratedAt) {
                             console.log("Report updated.");
                             return this.report;

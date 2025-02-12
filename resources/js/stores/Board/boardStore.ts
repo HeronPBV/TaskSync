@@ -103,7 +103,7 @@ export const useBoardStore = defineStore("boardStore", {
 
         registerWebSocketEvents() {
             socketService.on("BoardUpdated", (data) => {
-                console.log("Board updated event received:", data.board);
+                console.log("Board updated event received");
                 const index = this.boards.findIndex(
                     (b) => b.id === data.board.id
                 );
@@ -115,14 +115,14 @@ export const useBoardStore = defineStore("boardStore", {
             });
 
             socketService.on("BoardCreated", (data) => {
-                console.log("Board created event received:", data.board);
+                console.log("Board created event received");
                 if (!this.boards.some((b) => b.id === data.board.id)) {
                     this.boards.push(data.board);
                 }
             });
 
             socketService.on("BoardDeleted", (data) => {
-                console.log("Board deleted event received:", data.board);
+                console.log("Board deleted event received");
                 this.boards = this.boards.filter((b) => b.id !== data.board.id);
             });
         },

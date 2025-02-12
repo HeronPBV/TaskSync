@@ -27,9 +27,7 @@ const handleGenerateReport = async () => {
             10
         );
 
-        if (updatedReport) {
-            console.log("Final updated report:", updatedReport);
-        } else {
+        if (!updatedReport) {
             console.warn("Report polling reached max attempts without update.");
             toast.add({
                 severity: "warn",
