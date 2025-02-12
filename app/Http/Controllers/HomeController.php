@@ -13,9 +13,7 @@ class HomeController extends Controller
     {
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
+            'canRegister' => Route::has('register')
         ]);
     }
     public function dashboard()
