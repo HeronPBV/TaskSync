@@ -4,7 +4,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Board;
 use App\Models\Column;
-use Illuminate\Support\Facades\Gate;
 
 uses(RefreshDatabase::class)->in(__DIR__);
 

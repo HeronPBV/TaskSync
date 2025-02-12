@@ -16,6 +16,19 @@ class Column extends Model
         'position',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($column) {
+            if (!$column->position) {
+                $lastPosition = $column->board->columns()->max('position');
+                $column->position = is_null($lastPosition) ? 1 : $lastPosition + 1;
+            }
+        });
+    }
+
+
     public function board()
     {
         return $this->belongsTo(Board::class);
