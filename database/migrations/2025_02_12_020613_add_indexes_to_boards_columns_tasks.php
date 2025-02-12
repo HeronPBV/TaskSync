@@ -8,21 +8,23 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('boards', function (Blueprint $table) {
-            $table->index('user_id'); // Improves queries filtering boards by user
-            $table->index('deleted_at'); // Enhances soft delete performance
+            $table->index('user_id'); // Optimizes board retrieval by user
+            $table->index('deleted_at'); // Improves soft delete queries
         });
 
         Schema::table('columns', function (Blueprint $table) {
-            $table->index('board_id'); // Optimizes queries retrieving columns for a board
-            $table->index('position'); // Improves sorting columns by position
-            $table->index('deleted_at'); // Enhances soft delete performance
+            $table->index(['board_id', 'position']); // Faster sorting & retrieval of columns in a board
+            $table->index('deleted_at'); // Soft delete optimization
         });
 
         Schema::table('tasks', function (Blueprint $table) {
-            $table->index('column_id'); // Optimizes queries retrieving tasks for a column
-            $table->index('position'); // Improves sorting tasks by position within a column
-            $table->index('due_date'); // Speeds up queries filtering tasks by due date
-            $table->index('deleted_at'); // Enhances soft delete performance
+            $table->index(['column_id', 'position']); // Faster retrieval & sorting of tasks in a column
+            $table->index('due_date'); // Speeds up queries filtering by task deadline
+            $table->index('deleted_at'); // Soft delete optimization
+        });
+
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->index('priority'); // Helps queries filtering tasks by priority
         });
     }
 
@@ -34,16 +36,15 @@ return new class extends Migration {
         });
 
         Schema::table('columns', function (Blueprint $table) {
-            $table->dropIndex(['board_id']);
-            $table->dropIndex(['position']);
+            $table->dropIndex(['board_id', 'position']);
             $table->dropIndex(['deleted_at']);
         });
 
         Schema::table('tasks', function (Blueprint $table) {
-            $table->dropIndex(['column_id']);
-            $table->dropIndex(['position']);
+            $table->dropIndex(['column_id', 'position']);
             $table->dropIndex(['due_date']);
             $table->dropIndex(['deleted_at']);
+            $table->dropIndex(['priority']);
         });
     }
 };
