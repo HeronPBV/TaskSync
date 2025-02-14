@@ -130,7 +130,7 @@ I maintained a clean and logical structure that makes the codebase easy to navig
 -   **Encrypted Passwords (Bcrypt hashing)** ensuring user credentials remain secure.
 -   **Rate Limiting** on API endpoints to prevent abuse (`throttle:60,1`).
 
-##Adherence to Functional Requirements
+## Adherence to Functional Requirements
 Every feature was implemented with the assessment’s criteria in mind, ensuring high completeness and alignment with expectations.
 
 -   Authentication & Authorization: ✅
