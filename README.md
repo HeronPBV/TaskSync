@@ -173,7 +173,7 @@ Every feature was implemented with the assessment’s criteria in mind, ensuring
 
 ### 📌 Prerequisites
 
--   PHP 8.1+ (but is recomended PHP 8.3.*)
+-   PHP 8.2+ (but is recomended PHP 8.3.*)
 -   Composer
 -   Node.js 18+ (but is recomended node v22.13.*)
 -   PostgreSQL 15
