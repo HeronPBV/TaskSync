@@ -14,7 +14,7 @@
 
 ## 📌 Introduction
 
-The project is part of the technical assessment for the **Laravel Vue Full Stack Engineer** position at **Curotec**. Its sole purpose is to demonstrate **solid expertise** in **system development** using **Laravel, Vue.js, and related technologies**.
+The project sole purpose is to demonstrate **solid expertise** in **system development** using **Laravel, Vue.js, and related technologies**.
 
 TaskSync is a **modern, full-stack Kanban board management system** built with **Laravel 10, Vue.js 3, and Inertia.js**. Designed for smooth task tracking and project management, it integrates a robust backend with an intuitive, real-time frontend.
 
